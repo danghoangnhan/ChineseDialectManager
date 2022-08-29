@@ -1,0 +1,24 @@
+version: "3"
+services:
+  database:
+    image: mariadb:10.3
+    container_name: hfs_database
+    ports:
+      - 3313:3306
+    env_file:
+      - .env
+    volumes:
+      - ./my.cnf:/root/.my.cnf:ro
+      - ./database/mariadb10.3/conf.d:/etc/mysql/conf.d:ro
+      - ./database/mariadb10.3/logs:/var/log/mysql:rw
+      - ./database/mariadb10.3/initdb.d:/docker-entrypoint-initdb.d:ro
+      - ./initDB:${MOUNTED_SHARED_DIRECTORY}:ro
+      - ./auto-generate:/auto-generate:rw
+  hfs_backend:
+    image: 'hfs_backend'
+    container_name: 'hfs_backend'
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=local
