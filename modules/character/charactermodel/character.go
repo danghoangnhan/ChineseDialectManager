@@ -12,6 +12,7 @@ type Character struct {
 	Sound 	string
 	Tone	string
 	Ipa 	string
+	DictionaryID int
 }
 type CharacterCreate struct {
 	Symbol 	string
