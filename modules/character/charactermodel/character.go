@@ -8,38 +8,34 @@ import (
 const EntityName = "Character"
 
 type Character struct {
-	Symbol 	string
-	Sound 	string
-	Tone	string
-	Ipa 	string
-	DictionaryID int
+	common.SQLModel `json:",inline"`
+	Symbol 			string
+	Sound 			string
+	Tone			string
+	Ipa 			string
+	DictionaryID 	int
 }
 type CharacterCreate struct {
-	Symbol 	string
-	Sound 	string
-	Tone	string
-	Ipa 	string
+	common.SQLModel `json:",inline"`
+	Symbol 			string
+	Sound 			string
+	Tone			string
+	Ipa 			string
 }
 
 type CharacterUpdate struct {
-	Symbol 	string
-	Sound 	string
-	Tone	string
-	Ipa 	string
+	common.SQLModel `json:",inline"`
+	Symbol 			string
+	Sound 			string
+	Tone			string
+	Ipa 			string
 }
 
-func (Character) TableName() string {
-	return EntityName
-}
-func (CharacterUpdate) TableName() string {
-	return Character{}.TableName()
-}
-func (CharacterCreate) TableName() string {
-	return Character{}.TableName()
-}
+func (Character) TableName() string {return EntityName}
+func (CharacterUpdate) TableName() string {return Character{}.TableName()}
+func (CharacterCreate) TableName() string {return Character{}.TableName()}
 
 func (character *CharacterCreate)  Validate() error{
-
 	character.Symbol 	= 	strings.TrimSpace(character.Symbol)
 	character.Sound 	= 	strings.TrimSpace(character.Sound)
 	character.Tone 		= 	strings.TrimSpace(character.Tone)
@@ -59,6 +55,8 @@ func (character *CharacterCreate)  Validate() error{
 	}
 	return nil
 }
+
+
 func (character *CharacterUpdate) Validate() error {
 
 	character.Symbol 	= 	strings.TrimSpace(character.Symbol)
@@ -88,5 +86,5 @@ var (
 
 )
 func (character *Character) Mask(isAdminOrOwner bool)  {
-	character.GenerateUID(common.DbTypeRestaurant)
+	character.GenUID(common.DbTypeCharacter)
 }

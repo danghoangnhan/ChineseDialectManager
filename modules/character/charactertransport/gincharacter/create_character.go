@@ -3,7 +3,9 @@ package gincharacter
 import (
 	"IPADictionaryAPI/common"
 	"IPADictionaryAPI/component"
+	"IPADictionaryAPI/modules/character/characterbiz"
 	"IPADictionaryAPI/modules/character/charactermodel"
+	"IPADictionaryAPI/modules/character/characterstorage"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,17 +17,17 @@ func CreateCharacter(appCtx component.AppContext) gin.HandlerFunc {
 		if err := c.ShouldBind(&data); err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
-		requester := c.MustGet(common.CurrentUser).(common.Requester)
-		data.OwnerId = requester.GetUserId()
+		//requester := c.MustGet(common.CurrentUser).(common.Requester)
+		//data.OwnerId = requester.GetUserId()
 
-		store := characterstorag.NewSQLStore(appCtx.GetMainDBConnection())
-		biz   := housebiz.NewCreateHouseBiz(store)
+		store := characterstorage.NewSQLStore(appCtx.GetMainDBConnection())
+		biz   := characterbiz.NewCreateCharacterBiz(store)
 
-		if err := biz.CreateHouse(c.Request.Context(), &data); err != nil {
+		if err := biz.CreateCharacter(c.Request.Context(), &data); err != nil {
 			panic(err)
 		}
 
-		data.GenerateUID(common.DbTypeRestaurant)
+		data.GenUID(common.DbTypeCharacter)
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data.FakeId.String()))
 	}
 }

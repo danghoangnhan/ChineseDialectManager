@@ -3,6 +3,7 @@ package main
 import (
 	"IPADictionaryAPI/component"
 	"IPADictionaryAPI/modules/character/charactertransport/gincharacter"
+	"IPADictionaryAPI/modules/dictionary/dictionarytransport/gindictionary"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -35,20 +36,13 @@ func runService(db *gorm.DB) error {
 			"message": "pong",
 		})
 	})
-	//products := r.Group("/products")
-
+	characters := r.Group("/words")
 	{
-		//products.POST("", ginproduct.CreateProduct(appCtx))
-		//products.GET("/:id", ginproduct.GetProduct(appCtx))
-		//products.GET("", ginproduct.ListProduct(appCtx))
-		//products.PATCH("/:id", ginproduct.UpdateProduct(appCtx))
-		//products.DELETE("/:id", ginproduct.DeleteProduct(appCtx))
-	}
-	characters := r.Group("/words"){
 		characters.POST("",gincharacter.CreateCharacter(appCtx))
 	}
-	dictionaries := r.Group("/dictionaries"){
-		dictionaries.POST("",gincharacter.CreateCharacter(appCtx))
+	dictionaries := r.Group("/dictionaries")
+	{
+		dictionaries.POST("",gindictionary.CreateDictionary(appCtx))
 	}
 	return r.Run()
 }
