@@ -14,9 +14,9 @@ class Dictionary:
             "u":    IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0075\u02D0"),
             "W":    UNICODE_TO_IPA[u"\u0077"],
             "ai":   IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0061\u026A"),
-            "ao": None,
-            "iu": None,
-            "oi": None,
+            "ao":   IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0061\u028A"),
+            "iu":   IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u006A\u0075\u02D0"),
+            "oi":   IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u006F\u026A"),
             "Y": UNICODE_TO_IPA[u"\u0069"]
         }
         self.consonants = {
