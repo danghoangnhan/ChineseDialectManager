@@ -3,8 +3,6 @@ from pathlib import Path
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.environ.get("SECRET_KEY")
-DEBUG = False if int(os.environ['DEBUG']) == 1 else True
 
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
@@ -19,13 +17,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'driver',
-    'restaurant',
-    'geolocation',
-    'menu',
-    'order',
-    'RMDP_ml',
-    'rmdp_env'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
