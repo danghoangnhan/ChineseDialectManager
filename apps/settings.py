@@ -4,6 +4,8 @@ import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = 'n&6pl_cufrbhx7oh6maz+*d&s0f+n(3x-detl2je&zt%d3#($3'
+
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
@@ -17,6 +19,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'import_export',
+    'apps.dictionary'
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
