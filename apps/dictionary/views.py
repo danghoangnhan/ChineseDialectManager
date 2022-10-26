@@ -1,13 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from tablib import Dataset
-
-from apps.dictionary.models import Dictionary
 from apps.dictionary.resources import DictionaryResource
-
+from apps.templates import
 
 def home_view(request):
-    return render(request, 'base.html')
+    return render(request, 'apps/templates/base.html')
 
 
 def export_data(request):
