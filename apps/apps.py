@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MovieConfig(AppConfig):
-    name = 'apps'
+class DictionaryConfig(AppConfig):
+    name = 'apps.dictionary'

@@ -1,44 +1,52 @@
 import csv
 
-from django.forms import forms
-from django.shortcuts import redirect, render
-from django.urls import path
-from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
+from django.http import HttpResponse
+
+from apps.dictionary.models import models
 from apps.dictionary.models import Dictionary
 
 
+# Code from http://books.agiliq.com/projects/django-admin-cookbook/en/latest/export.html
+class ExportCsvMixin:
+    """ Admin Mixin to export CSV"""
 
-class CsvImportForm(forms.Form):
-    csv_file = forms.FileField()
+    def export_as_csv(self, request, queryset):
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
 
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
 
-class DictionaryAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    change_list_template = "entities/dictionaries_changelist.html"
-    list_display = ('last_name', 'first_name', 'date_of_birth', 'date_of_death')
-    fields = ['first_name', 'last_name', ('date_of_birth', 'date_of_death')]
+        writer.writerow(field_names)
+        for obj in queryset:
+            writer.writerow([getattr(obj, field) for field in field_names])
 
-    # def get_urls(self):
-    #     urls = super().get_urls()
-    #     my_urls = [
-    #         path('import-csv/', self.import_csv),
-    #     ]
-    #     return my_urls + urls
-    #
-    # def import_csv(self, request):
-    #     if request.method == "POST":
-    #         csv_file = request.FILES["csv_file"]
-    #         reader = csv.reader(csv_file)
-    #         # Create Hero objects from passed in data
-    #         # ...
-    #         self.message_user(request, "Your csv file has been imported")
-    #         return redirect("..")
-    #     form = CsvImportForm()
-    #     payload = {"form": form}
-    #     return render(
-    #         request, "admin/csv_form.html", payload
-    #     )
+        return response
+
+    export_as_csv.short_description = "Export Selected"
 
 
-DictionaryAdminSite = DictionaryAdmin()
+class DictionaryAdmin(admin.ModelAdmin):
+    list_display = ('site_id', 'warming_start', 'ecosystem_type')
+    list_filter = ('ecosystem_type',)
+    search_fields = ('site_id',)
 
+    fieldsets = (
+        ('Site Information', {
+            'fields': ('site_id', 'warming_start', 'ecosystem_type')
+        }),
+        ('Soil Information', {
+            'fields': (('sand_pct', 'silt_pct', 'clay_pct'),),
+        }),
+    )
+
+    class Media:
+        css = {
+            "screen": ("csv_example/css/admin.css",)
+        }
+
+
+# Register your models here.
+admin.site.register(Dictionary, DictionaryAdmin)

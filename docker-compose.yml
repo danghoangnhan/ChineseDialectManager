@@ -9,8 +9,7 @@ services:
       - .:/usr/src/app/
     ports:
       - 8000:8000
-    env_file:
-      - enviroment.env
+    env_file: 'envs/.env'
     depends_on:
       - database
   database:

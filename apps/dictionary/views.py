@@ -1,45 +1,48 @@
+import csv
 from django.http import HttpResponse
-from django.shortcuts import render
-from tablib import Dataset
-from apps.dictionary.resources import DictionaryResource
+from django_filters import FilterSet
+from django_filters.views import FilterView
+
+from apps.dictionary import models
 
 
-def export_data(request):
-    if request.method == 'POST':
-        file_format = request.POST['file-format']
-        employee_resource = DictionaryResource()
-        dataset = employee_resource.export()
-        if file_format == 'CSV':
-            response = HttpResponse(dataset.csv, content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="exported_data.csv"'
-            return response
-        elif file_format == 'JSON':
-            response = HttpResponse(dataset.json, content_type='application/json')
-            response['Content-Disposition'] = 'attachment; filename="exported_data.json"'
-            return response
-        elif file_format == 'XLS (Excel)':
-            response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
-            response['Content-Disposition'] = 'attachment; filename="exported_data.xls"'
-            return response
-
-    return render(request, 'export.html')
+def get_field_names(model_class):
+    fields = model_class._meta.get_fields()
+    field_names = [field.name for field in fields]
+    return field_names
 
 
-def import_data(request):
-    if request.method == 'POST':
-        file_format = request.POST['file-format']
-        employee_resource = DictionaryResource()
-        dataset = Dataset()
-        new_employees = request.FILES['importData']
+class DictionaryFilter(FilterSet):
+    class Meta:
+        model = models.Dictionary
+        fields = ['Word', 'Tone']
 
-        if file_format == 'CSV':
-            imported_data = dataset.load(new_employees.read().decode('utf-8'), format='csv')
-            result = employee_resource.import_data(dataset, dry_run=True)
-        elif file_format == 'JSON':
-            imported_data = dataset.load(new_employees.read().decode('utf-8'), format='json')
-            result = employee_resource.import_data(dataset, dry_run=True)
 
-        if not result.has_errors():
-            employee_resource.import_data(dataset, dry_run=False)
+class DictionaryFilterView(FilterView):
+    filterset_class = DictionaryFilter
+    paginate_by = 20
+    template_name = './dictionary_filter.html'
 
-    return render(request, 'import.html')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['field_names'] = get_field_names(models.Dictionary)
+        # Create a values object so it can be accessed by field_name
+        context['page_obj_values'] = context['page_obj'].object_list.values()
+        return context
+
+
+def download_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="dictionary.csv"'
+
+    field_names = get_field_names(models.Dictionary)
+    queryset = models.Dictionary.objects.all().order_by('word', 'tone').values(*field_names)
+    filter_obj = DictionaryFilter(request.GET, queryset=queryset)
+
+    writer = csv.writer(response)
+    writer.writerow(field_names)
+    for row in filter_obj.qs:
+        row_data = [row[field_name] for field_name in field_names]
+        writer.writerow(row_data)
+
+    return response
