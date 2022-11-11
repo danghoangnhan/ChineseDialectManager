@@ -7,4 +7,5 @@ urlpatterns = [
 
     path('', DictionaryFilterView.as_view(), name='index'),
     path('download/', download_csv, name='download_csv'),
+    path('admin/', admin.site.urls),
 ]

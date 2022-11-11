@@ -2,10 +2,11 @@ from django.db import models
 
 
 class Dictionary(models.Model):
-    Symbol = models.CharField(max_length=30)
-    Tone = models.CharField(max_length=30)
-    Word = models.CharField(max_length=60)
-    ipa = models.EmailField(blank=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=60)
+    email = models.EmailField(blank=True)
+    day_started = models.DateField()
+    location = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        return self.Symbol
+        return self.first_name
