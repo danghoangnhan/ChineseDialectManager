@@ -1,5 +1,5 @@
 from ipapy import UNICODE_TO_IPA
-from ipapy.ipachar import IPAVowel,IPAConsonant
+from ipapy.ipachar import IPAVowel, IPAConsonant
 from ipapy.ipastring import IPAString
 
 
@@ -16,13 +16,18 @@ class Dictionary:
             "o": UNICODE_TO_IPA[u"\u006F"],
             "o՜": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0254\u02D0"),
             "o‘": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0254\u02D0"),
+            "o'": IPAVowel(name="my_a_1", descriptors=u"open front unrounded",
+                           unicode_repr=u"\u0254\u02D0"),
+
             "u": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0075\u02D0"),
             "W": UNICODE_TO_IPA[u"\u0077"],
-            "ai": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0061\u026A"),
-            "ao": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u0061\u028A"),
-            "iu": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u006A\u0075\u02D0"),
-            "oi": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u006F\u026A"),
-            "Y": UNICODE_TO_IPA[u"\u0069"],
+            "ai": IPAVowel(name="ai", descriptors=u"open front unrounded", unicode_repr=u"\u0061\u026A"),
+            "ao": IPAVowel(name="ao", descriptors=u"open front unrounded", unicode_repr=u"\u0061\u028A"),
+            "iu": IPAVowel(name="iu", descriptors=u"open front unrounded", unicode_repr=u"\u006A\u0075\u02D0"),
+            "oi": IPAVowel(name="oi", descriptors=u"open front unrounded", unicode_repr=u"\u006F\u026A"),
+            "Y": IPAVowel(name="Y",
+                          descriptors=u"open front unrounded",
+                          unicode_repr=u"\u0069"),
             "‘": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u02B0"),
             "'": IPAVowel(name="my_a_1", descriptors=u"open front unrounded", unicode_repr=u"\u02B0"),
         }
@@ -35,19 +40,28 @@ class Dictionary:
             "b": UNICODE_TO_IPA[u"\u0062"],
             "g": UNICODE_TO_IPA[u"\u0067"],
             "ch": UNICODE_TO_IPA[u"\u0074\u0073"],
-            "ch'": IPAConsonant(name='aa',descriptors=u"voiced bilabial non-sibilant-fricative",unicode_repr=u"\u0074\u0073\u02B0"),
+            "ch'": IPAConsonant(name='ch\'', descriptors=u"voiced bilabial non-sibilant-fricative",
+                                unicode_repr=u"\u0074\u0073\u02B0"),
+            "s": IPAConsonant(name='s', descriptors=u"voiced bilabial non-sibilant-fricative",
+                                unicode_repr=u"\u0073"),
+            "l": IPAConsonant(name='l', descriptors=u"voiced bilabial non-sibilant-fricative",
+                              unicode_repr=u"\u006C"),
+            "n": IPAConsonant(name='n', descriptors=u"voiced bilabial non-sibilant-fricative",
+                              unicode_repr=u"\u006E"),
+            "ng": IPAConsonant(name='ng', descriptors=u"voiced bilabial non-sibilant-fricative",
+                              unicode_repr=u"\u014B"),
             "k'": IPAConsonant(name='aa', descriptors=u"voiced bilabial non-sibilant-fricative",
-                                unicode_repr=u"\u006B\u02B0"),
+                               unicode_repr=u"\u006B\u02B0"),
             "k": IPAConsonant(name='aa', descriptors=u"voiced bilabial non-sibilant-fricative",
-                               unicode_repr=u"\u006B"),
+                              unicode_repr=u"\u006B"),
             "p'": IPAConsonant(name='aa', descriptors=u"voiced bilabial non-sibilant-fricative",
-                              unicode_repr=u"\u0070\u02B0"),
+                               unicode_repr=u"\u0070\u02B0"),
             "p": IPAConsonant(name='aa', descriptors=u"voiced bilabial non-sibilant-fricative",
-                               unicode_repr=u"\u0070"),
+                              unicode_repr=u"\u0070"),
             "t": IPAConsonant(name='aa', descriptors=u"voiced bilabial non-sibilant-fricative",
                               unicode_repr=u"\u0074"),
             "t'": IPAConsonant(name='aa', descriptors=u"voiced bilabial non-sibilant-fricative",
-                              unicode_repr=u"\u0074\u02B0"),
+                               unicode_repr=u"\u0074\u02B0"),
         }
         self.ipaList = self.vowels.copy()
         self.ipaList.update(self.consonants)
@@ -71,5 +85,3 @@ class Dictionary:
 
 
 dict = Dictionary()
-
-print(dict.chaoshan2IPA("ch'ok"))

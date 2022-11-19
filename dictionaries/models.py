@@ -1,4 +1,6 @@
 from django.db import models
+from django.forms import JSONField
+from picklefield.fields import PickledObjectField
 
 
 class dictionary(models.Model):
@@ -10,10 +12,10 @@ class dictionary(models.Model):
         verbose_name = 'Dictionary'
         verbose_name_plural = 'Dictionaries'
 
+    args = JSONField()
+
     def __unicode__(self):
         return self.name
 
     def __str__(self):
         return self.name
-
-

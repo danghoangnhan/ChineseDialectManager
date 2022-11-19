@@ -1,19 +1,13 @@
-import csv
 from django import forms as form_2
 from django.contrib.auth.admin import admin
-from django.core.checks import messages
-from django.forms import forms
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
-from django.urls import path, reverse
 from django_admin_row_actions import AdminRowActionsMixin
 from django_object_actions import DjangoObjectActions
-from import_export.admin import ExportActionMixin, ImportMixin, ImportExportMixin, ImportExportActionModelAdmin
+from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 from import_export.forms import ImportForm, ConfirmImportForm
 
 from consonant import Dictionary
-from dictionaries import CsvImportForm
 from dictionaries.VocabularyModel import vocabulary
+from dictionaries.form import VocabularyImportForm, VocabularyConfirmImportForm
 from dictionaries.models import dictionary
 from dictionaries.resource import VocabularyAdminResource
 
@@ -44,41 +38,38 @@ class VocabularyAdmin(DjangoObjectActions,
                       ExportActionMixin,
                       admin.ModelAdmin):
     list_display = ('symbol_text', 'word', 'tone', 'ipa', 'description', 'dictionary_name')
-    list_filter = ("dictionary_name", )
-    search_fields = ("dictionary_name", )
-
+    list_filter = ("dictionary_name",)
+    search_fields = ("dictionary_name",)
     actions = ['update_ipa']
     change_list_template = "../templates/dictionaries/dictionary/change_list.html"
     resource_class = VocabularyAdminResource
+    import_form_class = VocabularyImportForm
+    confirm_form_class = VocabularyConfirmImportForm
 
-    def get_urls(self):
-        urls = super().get_urls()
-        new_urls = [path('upload-csv/', self.upload_csv), ]
-        return new_urls + urls
+    def get_resource_kwargs(self, request, *args, **kwargs):
+        rk = super().get_resource_kwargs(request, *args, **kwargs)
+        # This method may be called by the initial form GET request, before
+        # the contract is chosen. So we default to None.
+        rk['dictionary_name'] = None
+        if request.POST:  # *Now* we should have a non-null value
+            # In the dry-run import, the contract is included as a form field.
+            dictionary_name = request.POST.get('dictionary_name', None)
+            if dictionary_name:
+                # If we have it, save it in the session so we have it for the confirmed import.
+                request.session['dictionary_name'] = dictionary_name
+            else:
+                try:
+                    # If we don't have it from a form field, we should find it in the session.
+                    dictionary_name = request.session['dictionary_name']
+                except KeyError as e:
+                    raise Exception("Context failure on row import, " +
+                                    f"check admin.py for more info: {e}")
+            rk['dictionary_name'] = dictionary_name
+        return rk
 
     @admin.action(description='Update the IPA')
     def update_ipa(self, request, obj):
-
-        selected = request.POST.getlist(admin.ModelAdmin)
-
-    def upload_csv(self, request):
-
-        if request.method == "POST":
-            csv_file = request.FILES["csv_upload"]
-
-            if not csv_file.name.endswith('.csv'):
-                messages.warning(request, 'The wrong file type was uploaded')
-                return HttpResponseRedirect(request.path_info)
-
-            file_data = csv_file.read().decode("utf-8").split("\n")
-            objectList = [generateVocabulary(x) for x in file_data[1:]]
-            bulk_msj = vocabulary.objects.bulk_create(objectList)
-            url = reverse('admin:index')
-            return HttpResponseRedirect(url)
-
-        form = CsvImportForm()
-        data = {"form": form}
-        return render(request, "admin/csv_upload.html", data)
+        request.POST.getlist(admin.ModelAdmin)
 
 
 def generateVocabulary(data) -> vocabulary:
