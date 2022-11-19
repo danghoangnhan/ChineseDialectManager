@@ -4,7 +4,6 @@ pytz==2021.1
 sqlparse==0.4.1
 PyMySQL~=1.0.2
 djangorestframework==3.14.0
-Django==4.1.2
 python-dotenv==0.21.0
 django-cors-headers
 tablib~=3.2.1

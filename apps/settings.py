@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'dictionaries',
     'django_admin_row_actions',
     'django_object_actions',
-    'import_export'
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -41,7 +41,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'apps.urls'
 
 TEMPLATES = [
     {
@@ -59,7 +59,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'apps.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -100,6 +100,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_URL = 'apps.templates/'
 
-DEBUG = False
+DEBUG = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
