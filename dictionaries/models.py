@@ -1,6 +1,5 @@
 from django.db import models
 from django.forms import JSONField
-from picklefield.fields import PickledObjectField
 
 
 class dictionary(models.Model):
