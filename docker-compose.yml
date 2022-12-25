@@ -9,7 +9,7 @@ services:
       - .:/usr/src/app/
     ports:
       - 8000:8000
-    env_file: 'envs/.env'
+    env_file: 'enviroment.env'
     depends_on:
       - database
   database:
@@ -20,6 +20,6 @@ services:
      - --character-set-server=utf8mb4
      - --collation-server=utf8mb4_unicode_ci
     restart: "always"
-    env_file: 'envs/.env'
+    env_file: 'enviroment.env'
     ports:
       - 0.0.0.0:3313:3306

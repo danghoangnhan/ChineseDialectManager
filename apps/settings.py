@@ -3,7 +3,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -13,8 +12,7 @@ SECRET_KEY = 'django-insecure-ge356@&9l9=djmz073s&r7na@(bhf%r**tho)jt^din*sfs)1w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', "140.136.149.209"]
 
 # Application definition
 
@@ -64,10 +62,10 @@ WSGI_APPLICATION = 'apps.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':     'dictionary',
-        'USER':     'root',
+        'NAME': 'dictionary',
+        'USER': 'root',
         'PASSWORD': 'dictionary',
-        'HOST': '140.136.149.212',   # Or an IP Address that your DB is hosted on
+        'HOST': '140.136.149.212',  # Or an IP Address that your DB is hosted on
         'PORT': '3313',
     }
 }
