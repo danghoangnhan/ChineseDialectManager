@@ -101,9 +101,10 @@ class VocabularyAdmin(DjangoObjectActions,
             for dictionary_name in dictionary_list:
                 obj = v.get(key).get(dictionary_name)
                 if obj is not  None:
-                    rowValue.append(getattr(obj, 'ipa'))
-                    rowValue.append(getattr(obj, 'tone'))
                     rowValue.append(getattr(obj, 'word'))
+                    rowValue.append(getattr(obj, 'tone'))
+                    rowValue.append(getattr(obj, 'ipa'))
+
                 else:
                     rowValue.append(None)
                     rowValue.append(None)
