@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dictionaries',
+    'rules',
     'django_admin_row_actions',
     'django_object_actions',
     'import_export',

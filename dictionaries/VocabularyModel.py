@@ -13,6 +13,8 @@ class vocabulary(models.Model):
 
     class Meta:
         db_table = 'vocabulary'
+        verbose_name = 'Vocabulary'
+        verbose_name_plural = 'vocabularies'
 
     def __str__(self):
         return self.word

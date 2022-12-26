@@ -38,8 +38,6 @@ class Dictionary:
         self.consonants = {
             "ch": UNICODE_TO_IPA[u"\u0074\u0073"],
             "s": UNICODE_TO_IPA[u"\u0073"],
-            "l": UNICODE_TO_IPA[u"\u006C"],
-            "n": UNICODE_TO_IPA[u"\u006E"],
             "ng": UNICODE_TO_IPA[u"\u014B"],
             "b": UNICODE_TO_IPA[u"\u0062"],
             "g": UNICODE_TO_IPA[u"\u0067"],
