@@ -1,5 +1,8 @@
+import os
+
 from django import forms as form_2
 from django.contrib.auth.admin import admin
+from django.http import HttpResponseRedirect, HttpResponse
 from django_admin_row_actions import AdminRowActionsMixin
 from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
@@ -40,24 +43,19 @@ class RulesAdmin(DjangoObjectActions,
     search_fields = ("dictionary",)
     actions = ['export_as_csv']
 
-    change_list_template = "../templates/dictionaries/dictionary/change_list.html"
+    change_list_template = '../templates/rules/change_list.html'
     resource_class = RulesResource
     import_form_class = VocabularyImportForm
-
     # confirm_form_class = VocabularyConfirmImportForm
 
-    def get_resource_kwargs(self, request, *args, **kwargs):
-        rk = super().get_resource_kwargs(request, *args, **kwargs)
-        rk['dictionary_name'] = None
-        if request.POST:  # *Now* we should have a non-null value
-            dictionary_name = request.POST.get('dictionary_name', None)
-            if dictionary_name:
-                request.session['dictionary_name'] = dictionary_name
-            else:
-                try:
-                    dictionary_name = request.session['dictionary_name']
-                except KeyError as e:
-                    raise Exception("Context failure on row import, " +
-                                    f"check admin.py for more info: {e}")
-            rk['dictionary_name'] = dictionary_name
-        return rk
+    def response_change(self, request, obj):
+        if 'download_rules_template' in request.POST:
+            path = '../static/dictionary_rules.xlsx'  # this should live elsewhere, definitely
+            if os.path.exists(path):
+                with open(path, "r") as excel:
+                    data = excel.read()
+                response = HttpResponse(data,content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                response['Content-Disposition'] = 'attachment; filename=%s_Report.xlsx' % id
+                return response
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
