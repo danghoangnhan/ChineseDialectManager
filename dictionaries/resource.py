@@ -1,8 +1,10 @@
 from import_export import resources, fields
 
+from consonant import Dictionary as DictConvert
 from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
-from consonant import dict
+from rules.models import rules
+
 
 class VocabularyAdminResource(resources.ModelResource):
     word = fields.Field(column_name='音', attribute='word')
@@ -11,9 +13,12 @@ class VocabularyAdminResource(resources.ModelResource):
     dictionary_name = fields.Field(attribute='dictionary_name')
     ipa = fields.Field(attribute='ipa')
 
-    def __init__(self, dictionary_name=None):
-        super()
-        self.dictionary_name = dictionary_name
+    def __init__(self, dictionary_name):
+        super().__init__()
+        if dictionary_name is not None:
+            self.dictionary: dictionary = dictionary.objects.filter(id=int(dictionary_name)).first()
+            ruleList: list[rules] = [rule for rule in rules.objects.filter(dictionary__exact=self.dictionary.id)]
+            self.dictconvert = DictConvert(ruleList)
 
     class Meta:
         model = vocabulary
@@ -21,6 +26,7 @@ class VocabularyAdminResource(resources.ModelResource):
         import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name']
 
     def before_import_row(self, row, **kwargs):
-        dictionaryObject = dictionary.objects.filter(id=int(self.dictionary_name)).first()
-        row['dictionary_name'] = dictionaryObject.name
-        row['ipa'] = dict.chaoshan2IPA(row['音'])
+        row['dictionary_name'] = self.dictionary.name
+        row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
+        row['音'] = str(row['音']).lower()
+

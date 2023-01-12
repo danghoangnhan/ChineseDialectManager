@@ -5,7 +5,7 @@ from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 from import_export.forms import ImportForm, ConfirmImportForm
 
-from dictionaries.form import VocabularyImportForm, VocabularyConfirmImportForm
+from dictionaries.form import VocabularyImportForm
 from rules.models import rules
 from rules.resource import RulesResource
 
@@ -39,7 +39,7 @@ class RulesAdmin(DjangoObjectActions,
     change_list_template = "../templates/dictionaries/dictionary/change_list.html"
     resource_class = RulesResource
     import_form_class = VocabularyImportForm
-    confirm_form_class = VocabularyConfirmImportForm
+    # confirm_form_class = VocabularyConfirmImportForm
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)

@@ -8,5 +8,5 @@ class VocabularyImportForm(ImportForm):
     dictionary_name = forms.ModelChoiceField(label="dictionary_name", queryset=dictionary.objects.all(), required=True)
 
 
-class VocabularyConfirmImportForm(ConfirmImportForm):
-    dictionary_name = forms.ModelChoiceField(label="dictionary_name",queryset=dictionary.objects.all(), required=True)
+# class VocabularyConfirmImportForm(ConfirmImportForm):
+#     dictionary_name = forms.ModelChoiceField(label="dictionary_name", queryset=dictionary.objects.all(), required=True)

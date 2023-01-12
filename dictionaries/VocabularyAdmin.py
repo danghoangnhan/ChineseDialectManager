@@ -11,11 +11,10 @@ from import_export.forms import ImportForm, ConfirmImportForm
 
 from consonant import Dictionary
 from dictionaries.VocabularyModel import vocabulary
-from dictionaries.form import VocabularyImportForm, VocabularyConfirmImportForm
+from dictionaries.form import VocabularyImportForm
 from dictionaries.models import dictionary
 from dictionaries.resource import VocabularyAdminResource
 
-chaoshan = Dictionary()
 
 
 class VocabularyInline(admin.StackedInline):
@@ -52,7 +51,7 @@ class VocabularyAdmin(DjangoObjectActions,
     change_list_template = "../templates/dictionaries/dictionary/change_list.html"
     resource_class = VocabularyAdminResource
     import_form_class = VocabularyImportForm
-    confirm_form_class = VocabularyConfirmImportForm
+    # confirm_form_class = VocabularyConfirmImportForm
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)

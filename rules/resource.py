@@ -1,6 +1,5 @@
 from import_export import resources, fields
 
-from consonant import dict
 from rules.models import rules
 
 
@@ -13,6 +12,7 @@ class RulesResource(resources.ModelResource):
 
     def __init__(self, dictionary_name=None):
         super()
+        super().__init__()
         self.dictionary_name = dictionary_name
 
     class Meta:
@@ -24,3 +24,4 @@ class RulesResource(resources.ModelResource):
         dictionaryObject = rules.objects.filter(id=int(self.dictionary_name)).first()
         row['dictionary_name'] = dictionaryObject.name
         row['ipa'] = dict.chaoshan2IPA(row['音'])
+        print("done")
