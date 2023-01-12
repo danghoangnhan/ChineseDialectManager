@@ -18,10 +18,12 @@ from dictionaries.resource import VocabularyAdminResource
 class VocabularyInline(admin.StackedInline):
     model = vocabulary
 
+
 class CustomImportForm(ImportForm):
-    author = form_2.ModelChoiceField(
+    dictionary_name = form_2.ModelChoiceField(
         queryset=dictionary.objects.all(),
         required=True)
+
 
 class CustomConfirmImportForm(ConfirmImportForm):
     dictionary_name = form_2.ModelChoiceField(
@@ -46,7 +48,7 @@ class VocabularyAdmin(DjangoObjectActions,
 
     change_list_template = "../templates/dictionaries/dictionary/change_list.html"
     resource_class = VocabularyAdminResource
-    import_form_class = VocabularyImportForm
+    # import_form_class = VocabularyImportForm
 
     @admin.action(description='export csv')
     def export_as_csv(self, request, queryset):

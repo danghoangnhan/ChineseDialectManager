@@ -9,27 +9,31 @@ from dictionaries.form import VocabularyImportForm
 from rules.models import rules
 from rules.resource import RulesResource
 
+
 class RulesInline(admin.StackedInline):
     model = rules
+
 
 class CustomImportForm(ImportForm):
     author = form_2.ModelChoiceField(
         queryset=rules.objects.all(),
         required=True)
 
+
 class CustomConfirmImportForm(ConfirmImportForm):
     dictionary_name = form_2.ModelChoiceField(
         queryset=rules.objects.all(),
         required=True)
 
+
 @admin.register(rules)
 class RulesAdmin(DjangoObjectActions,
-                      AdminRowActionsMixin,
-                      ImportExportMixin,
-                      ImportExportActionModelAdmin,
-                      ExportActionMixin,
-                      admin.ModelAdmin):
-    list_display = ('name', 'descriptors', 'unicode_repr',   'dictionary','type')
+                 AdminRowActionsMixin,
+                 ImportExportMixin,
+                 ImportExportActionModelAdmin,
+                 ExportActionMixin,
+                 admin.ModelAdmin):
+    list_display = ('name', 'descriptors', 'unicode_repr', 'dictionary', 'type')
     list_filter = ("dictionary",)
     search_fields = ("dictionary",)
     list_filter = ("dictionary",)
@@ -39,6 +43,7 @@ class RulesAdmin(DjangoObjectActions,
     change_list_template = "../templates/dictionaries/dictionary/change_list.html"
     resource_class = RulesResource
     import_form_class = VocabularyImportForm
+
     # confirm_form_class = VocabularyConfirmImportForm
 
     def get_resource_kwargs(self, request, *args, **kwargs):

@@ -13,7 +13,7 @@ class VocabularyAdminResource(resources.ModelResource):
     dictionary_name = fields.Field(attribute='dictionary_name')
     ipa = fields.Field(attribute='ipa')
 
-    def __init__(self, dictionary_name):
+    def __init__(self, dictionary_name=None):
         super().__init__()
         if dictionary_name is not None:
             self.dictionary: dictionary = dictionary.objects.filter(id=int(dictionary_name)).first()

@@ -5,10 +5,9 @@ from rules.models import rules
 
 
 class RulesResource(resources.ModelResource):
-    id = fields.Field(column_name=id)
     name = fields.Field(column_name='name', attribute='name')
     unicode_repr = fields.Field(column_name='unicode_repr', attribute='unicode_repr')
-    descriptors = fields.Field(column_name='descriptors', attribute='descriptor')
+    descriptor = fields.Field(column_name='descriptor', attribute='descriptor')
     type = fields.Field(column_name='type', attribute='type')
     dictionary = fields.Field(attribute='dictionary')
 
@@ -20,7 +19,7 @@ class RulesResource(resources.ModelResource):
     class Meta:
         model = rules
         exclude = ('id')
-        import_id_fields = ['name', 'unicode_repr', 'descriptors', 'type', 'dictionary']
+        import_id_fields = ['name', 'unicode_repr', 'descriptor', 'type', 'dictionary']
 
     def before_import_row(self, row, **kwargs):
         row['dictionary'] = self.dictionary.name

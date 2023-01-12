@@ -1,7 +1,6 @@
-from rules.models import rules
 class Dictionary:
 
-    def __init__(self, ruleList: list[rules]):
+    def __init__(self, ruleList):
         self.ipaList = None
         self.vowels = []
         self.consonants = []
