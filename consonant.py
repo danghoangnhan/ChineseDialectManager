@@ -1,8 +1,4 @@
-import unicodedata
-
 from rules.models import rules
-
-
 class Dictionary:
 
     def __init__(self, ruleList: list[rules]):
@@ -29,16 +25,4 @@ class Dictionary:
                 finish = len(data)
             else:
                 finish -= 1
-        return result
-
-    def uni2str(self, data) -> str:
-        result = ''
-
-        title = u"\u0251\u02D0"
-        unicodedata.normalize('NFKD', title).encode('ascii', 'ignore')
-        while data.__contains__('\\u'):
-            index = data[2:6]
-            index = chr(int(index, 16))
-            result += index
-            data = data[6:]
         return result
