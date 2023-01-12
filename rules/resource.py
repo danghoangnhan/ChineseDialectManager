@@ -1,27 +1,26 @@
 from import_export import resources, fields
 
+from dictionaries.models import dictionary
 from rules.models import rules
 
 
 class RulesResource(resources.ModelResource):
-    word = fields.Field(column_name='音', attribute='word')
-    symbol_text = fields.Field(column_name='字', attribute='symbol_text')
-    tone = fields.Field(column_name='聲調', attribute='tone')
-    dictionary_name = fields.Field(attribute='dictionary_name')
-    ipa = fields.Field(attribute='ipa')
+    id = fields.Field(column_name=id)
+    name = fields.Field(column_name='name', attribute='name')
+    unicode_repr = fields.Field(column_name='unicode_repr', attribute='unicode_repr')
+    descriptors = fields.Field(column_name='descriptors', attribute='descriptor')
+    type = fields.Field(column_name='type', attribute='type')
+    dictionary = fields.Field(attribute='dictionary')
 
     def __init__(self, dictionary_name=None):
-        super()
         super().__init__()
-        self.dictionary_name = dictionary_name
+        if dictionary_name is not None:
+            self.dictionary: dictionary = dictionary.objects.filter(id=int(dictionary_name)).first()
 
     class Meta:
         model = rules
-        exclude = ('id', 'symbol_image', "ipa", "description")
-        import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name']
+        exclude = ('id')
+        import_id_fields = ['name', 'unicode_repr', 'descriptors', 'type', 'dictionary']
 
     def before_import_row(self, row, **kwargs):
-        dictionaryObject = rules.objects.filter(id=int(self.dictionary_name)).first()
-        row['dictionary_name'] = dictionaryObject.name
-        row['ipa'] = dict.chaoshan2IPA(row['音'])
-        print("done")
+        row['dictionary'] = self.dictionary.name
