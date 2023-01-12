@@ -10,7 +10,6 @@ from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExpo
 from import_export.forms import ImportForm, ConfirmImportForm
 
 from dictionaries.VocabularyModel import vocabulary
-from dictionaries.form import VocabularyImportForm
 from dictionaries.models import dictionary
 from dictionaries.resource import VocabularyAdminResource
 
@@ -48,7 +47,6 @@ class VocabularyAdmin(DjangoObjectActions,
 
     change_list_template = "../templates/dictionaries/dictionary/change_list.html"
     resource_class = VocabularyAdminResource
-    # import_form_class = VocabularyImportForm
 
     @admin.action(description='export csv')
     def export_as_csv(self, request, queryset):

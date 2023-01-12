@@ -48,18 +48,13 @@ class RulesAdmin(DjangoObjectActions,
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
-        # This method may be called by the initial form GET request, before
-        # the contract is chosen. So we default to None.
         rk['dictionary_name'] = None
         if request.POST:  # *Now* we should have a non-null value
-            # In the dry-run import, the contract is included as a form field.
             dictionary_name = request.POST.get('dictionary_name', None)
             if dictionary_name:
-                # If we have it, save it in the session so we have it for the confirmed import.
                 request.session['dictionary_name'] = dictionary_name
             else:
                 try:
-                    # If we don't have it from a form field, we should find it in the session.
                     dictionary_name = request.session['dictionary_name']
                 except KeyError as e:
                     raise Exception("Context failure on row import, " +
