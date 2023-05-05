@@ -1,6 +1,3 @@
-import unicodedata
-
-
 class Dictionary:
 
     def __init__(self, ruleList):
@@ -28,7 +25,6 @@ class Dictionary:
             else:
                 finish -= 1
         return result
-
 
     def uni2str(self, data) -> str:
         result = ''

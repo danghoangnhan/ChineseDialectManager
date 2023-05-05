@@ -48,14 +48,13 @@ class RulesAdmin(DjangoObjectActions,
     import_form_class = VocabularyImportForm
     # confirm_form_class = VocabularyConfirmImportForm
 
-    def response_change(self, request, obj):
-        if 'download_rules_template' in request.POST:
-            path = '../static/dictionary_rules.xlsx'  # this should live elsewhere, definitely
-            if os.path.exists(path):
-                with open(path, "r") as excel:
-                    data = excel.read()
-                response = HttpResponse(data,content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-                response['Content-Disposition'] = 'attachment; filename=%s_Report.xlsx' % id
-                return response
-            return HttpResponseRedirect(".")
-        return super().response_change(request, obj)
+    def set_immortal(self, request):
+        path = '../static/dictionary_rules.xlsx'  # this should live elsewhere, definitely
+        if os.path.exists(path):
+            with open(path, "r") as excel:
+                data = excel.read()
+            response = HttpResponse(data,
+                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=%s_Report.xlsx' % id
+            return response
+        return HttpResponseRedirect(".")
