@@ -1,6 +1,6 @@
 import csv
 from collections import defaultdict
-
+from itertools import groupby
 from django import forms as form_2
 from django.contrib.auth.admin import admin
 from django.http import HttpResponse
@@ -53,32 +53,34 @@ class VocabularyAdmin(DjangoObjectActions,
         meta = vocabulary._meta
         header = ['字']
         template = ['音', '聲調', 'IPA']
-        dictionary_list = []
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
         writer = csv.writer(response)
         v = defaultdict(dict)
-        for obj in queryset:
-            key = getattr(obj, 'symbol_text')
-            dictionary_name = getattr(obj, 'dictionary_name')
-            v[key].__setitem__(dictionary_name, obj)
-            if (dictionary_name not in dictionary_list):
-                dictionary_list.append(dictionary_name)
+        datalist = [obj for obj in queryset]
+        dictionary_list = set([getattr(obj, 'dictionary_name') for obj in datalist])
+        mapping = defaultdict(dict)
+        for data_element in datalist:
+            if mapping.get(data_element) is None:
+                mapping[getattr(data_element, 'word')] = defaultdict()
+            mapping[getattr(data_element, 'word')][getattr(data_element, 'dictionary_name')] = data_element
+
         for dictionary_name in dictionary_list:
             for col in template:
                 header.append(dictionary_name + '_' + col)
         writer.writerow(header)
-        for key in v:
+        for key in mapping:
             rowValue = [key]
+            inode = mapping.get(key)
             for dictionary_name in dictionary_list:
-                obj = v.get(key).get(dictionary_name)
+                obj = inode.get(dictionary_name)
                 if obj is not None:
                     rowValue.append(getattr(obj, 'word'))
                     rowValue.append(getattr(obj, 'tone'))
                     rowValue.append(getattr(obj, 'ipa'))
-
                 else:
                     rowValue.append(None)
                     rowValue.append(None)
                     rowValue.append(None)
+            writer.writerow(rowValue)
         return response
