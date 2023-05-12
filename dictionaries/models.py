@@ -1,11 +1,14 @@
 from django.db import models
 from django.forms import JSONField
 
+tone_convert_type = [("BC_AT", "BC TO AT"), ("AT_BC", "AT TO BC")]
+enable_tone_option = [("1", "yes"), ("2", "no")]
 
 class dictionary(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=100)
-
+    enable_tone_convert = models.BooleanField()
+    convert_type = models.CharField(max_length=255,choices=tone_convert_type)
     class Meta:
         db_table = 'dictionary'
         verbose_name = 'Dictionary'
