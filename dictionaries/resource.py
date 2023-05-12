@@ -1,3 +1,5 @@
+from sys import path
+
 from import_export import resources, fields
 
 from consonant import Dictionary as DictConvert
@@ -20,6 +22,16 @@ class VocabularyAdminResource(resources.ModelResource):
             ruleList: list[rules] = [rule for rule in rules.objects.filter(dictionary__exact=self.dictionary.id)]
             self.dictconvert = DictConvert(ruleList)
 
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path('activate-scenario/', self.acitvate_scenario, name="admin_activate_scenario"),
+        ]
+        return my_urls + urls
+
+    def acitvate_scenario(self, request, pk):
+        print(request)
+
     class Meta:
         model = vocabulary
         exclude = ('id', 'symbol_image', "ipa", "description")
@@ -29,4 +41,3 @@ class VocabularyAdminResource(resources.ModelResource):
         row['dictionary_name'] = self.dictionary.name
         row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
         row['音'] = str(row['音']).lower()
-

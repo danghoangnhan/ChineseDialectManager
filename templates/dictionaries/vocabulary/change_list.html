@@ -1,8 +1,29 @@
 {% extends "admin/change_list.html" %}
 {% load static %}
 {% block content %}
-
-<a href="upload-csv/">Upload a csv file</a>
-
-{{ block.super }}
+    <form
+            method="post"
+            id="tone-option-form"
+            enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <table>
+            <thead>
+                <tr>
+                    <th>Dictionary Name</th>
+                    <th>Enable Tone Convert</th>
+                    <th>Country Dialect</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <form method="post">
+                {% csrf_token %}
+                {{ note_form.as_p }}
+                <button class="button is-success is-fullwidth is-medium mt-5"
+                        type="submit">Dweet
+                </button>
+            </form>
+        </table>
+    {{ block.super }}
 {% endblock %}

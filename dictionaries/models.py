@@ -18,3 +18,26 @@ class dictionary(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class tone_convert(models.Model):
+    country_type = models.CharField(max_length=50)
+    description = models.CharField(max_length=100)
+    flat = models.IntegerField()
+    up = models.IntegerField()
+    go = models.IntegerField()
+    into = models.IntegerField()
+    type = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'tone_rule'
+        verbose_name = 'Tone_rule'
+        verbose_name_plural = 'tone_rules'
+
+    args = JSONField()
+
+    def __unicode__(self):
+        return self.country_type
+
+    def __str__(self):
+        return self.country_type
