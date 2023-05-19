@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+import urllib3
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ge356@&9l9=djmz073s&r7na@(bhf%r**tho)jt^din*sfs)1w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -29,6 +31,7 @@ INSTALLED_APPS = [
     'django_admin_row_actions',
     'django_object_actions',
     'import_export',
+    'import_export_celery'
 ]
 
 MIDDLEWARE = [
@@ -39,7 +42,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'author.middlewares.AuthorDefaultBackendMiddleware'
 ]
+BROKER_URL = os.environ.get("REDIS_URL", "redis://redis")
+REDIS_URL = os.environ.get("REDIS_URL", "redis://redis")
 
 ROOT_URLCONF = 'apps.urls'
 
@@ -103,5 +109,10 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEBUG = True
+urllib3.disable_warnings()
+IMPORT_EXPORT_CELERY_MODELS = {
+    "Winner": {"app_label": "winners", "model_name": "Winner"}
+}
+# IMPORT_EXPORT_USE_TRANSACTIONS = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

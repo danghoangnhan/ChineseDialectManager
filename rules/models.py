@@ -8,9 +8,7 @@ class rules(models.Model):
     name = models.CharField(max_length=50, unique=True)
     unicode_repr = models.CharField(max_length=100, unique=False)
     descriptors = models.CharField(max_length=100, unique=False)
-    # dictionary = ForeignKey(dictionary, on_delete=models.CASCADE, default=None, related_name='dictionary',
-    #                         db_column='dictionary')
-    dictionary = models.CharField(max_length=50)
+    dictionary_name = models.CharField(max_length=50)
     type = models.CharField(max_length=100, unique=False)
 
     class Meta:

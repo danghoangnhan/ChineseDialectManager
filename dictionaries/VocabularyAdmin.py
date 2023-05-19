@@ -1,33 +1,19 @@
 import csv
 from collections import defaultdict
 
-from django import forms as form_2
 from django.contrib.auth.admin import admin
 from django.http import HttpResponse
 from django_admin_row_actions import AdminRowActionsMixin
 from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
-from import_export.forms import ImportForm, ConfirmImportForm
 
 from dictionaries.VocabularyModel import vocabulary
-from dictionaries.models import dictionary
+from dictionaries.form import VocabularyImportForm
 from dictionaries.resource import VocabularyAdminResource
 
 
 class VocabularyInline(admin.StackedInline):
     model = vocabulary
-
-
-class CustomImportForm(ImportForm):
-    dictionary_name = form_2.ModelChoiceField(
-        queryset=dictionary.objects.all(),
-        required=True)
-
-
-class CustomConfirmImportForm(ConfirmImportForm):
-    dictionary_name = form_2.ModelChoiceField(
-        queryset=dictionary.objects.all(),
-        required=True)
 
 
 @admin.register(vocabulary)
@@ -37,27 +23,16 @@ class VocabularyAdmin(DjangoObjectActions,
                       ImportExportActionModelAdmin,
                       ExportActionMixin,
                       admin.ModelAdmin):
-
     list_display = ('symbol_text', 'word', 'tone', 'ipa', 'description', 'dictionary_name')
-    search_fields = ("dictionary_name",)
     actions = ['export_as_csv']
-
-    change_list_template = "../templates/dictionaries/vocabulary/change_list.html"
+    # change_list_template = "../templates/dictionaries/vocabulary/change_list.html"
     resource_class = VocabularyAdminResource
 
     def get_import_form(self):
-        return CustomImportForm
+        return VocabularyImportForm
 
-    def get_confirm_import_form(self):
-        return CustomConfirmImportForm
-
-    def get_form_kwargs(self, form, *args, **kwargs):
-        # pass on `author` to the kwargs for the custom confirm form
-        if isinstance(form, CustomImportForm):
-            if form.is_valid():
-                author = form.cleaned_data['author']
-                kwargs.update({'author': author.id})
-        return kwargs
+    # def get_confirm_import_form(self):
+    #     return VocabularyConfirmImportForm
 
     @admin.action(description=' export to dictionary format csv')
     def export_as_csv(self, request, queryset):
@@ -95,3 +70,8 @@ class VocabularyAdmin(DjangoObjectActions,
                     rowValue.append(None)
             writer.writerow(rowValue)
         return response
+
+    def get_resource_kwargs(self, request, *args, **kwargs):
+        rk = super().get_resource_kwargs(request, *args, **kwargs)
+        rk['dictionary_name'] = request.POST.get('dictionary_name')
+        return rk

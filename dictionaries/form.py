@@ -13,8 +13,3 @@ class VocabularyImportForm(ImportForm):
 
 class VocabularyConfirmImportForm(ConfirmImportForm):
     dictionary_name = forms.ModelChoiceField(label="dictionary_name", queryset=dictionary.objects.all(), required=True)
-
-
-class NoteOptionForm(forms.Form):
-    enable_tone_option = forms.ChoiceField(widget=forms.Select, choices=tone_convert_type)
-    tone_convert_choice_form = forms.ChoiceField(widget=forms.RadioSelect, choices=tone_convert_type)
