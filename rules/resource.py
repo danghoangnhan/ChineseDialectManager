@@ -25,5 +25,5 @@ class RulesResource(resources.ModelResource):
         raise_errors = False
         import_id_fields = ['name', 'unicode_repr', 'type', 'descriptors']
 
-    def before_import_row(self, row, **kwargs):
+    def before_import_row(self, row, row_number=None, **kwargs):
         row['dictionary_name'] = self.dictionary.name

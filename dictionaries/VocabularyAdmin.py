@@ -8,7 +8,7 @@ from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 
 from dictionaries.VocabularyModel import vocabulary
-from dictionaries.form import VocabularyImportForm
+from dictionaries.form import VocabularyImportForm, VocabularyConfirmImportForm
 from dictionaries.resource import VocabularyAdminResource
 
 
@@ -23,16 +23,12 @@ class VocabularyAdmin(DjangoObjectActions,
                       ImportExportActionModelAdmin,
                       ExportActionMixin,
                       admin.ModelAdmin):
-    list_display = ('symbol_text', 'word', 'tone', 'ipa', 'description', 'dictionary_name')
+    list_display = ('symbol_text', 'word', 'tone', 'ipa', 'dictionary_name')
     actions = ['export_as_csv']
     # change_list_template = "../templates/dictionaries/vocabulary/change_list.html"
     resource_class = VocabularyAdminResource
-
-    def get_import_form(self):
-        return VocabularyImportForm
-
-    # def get_confirm_import_form(self):
-    #     return VocabularyConfirmImportForm
+    # import_form_class = VocabularyImportForm
+    # confirm_form_class = VocabularyConfirmImportForm
 
     @admin.action(description=' export to dictionary format csv')
     def export_as_csv(self, request, queryset):
@@ -74,4 +70,5 @@ class VocabularyAdmin(DjangoObjectActions,
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
         rk['dictionary_name'] = request.POST.get('dictionary_name')
+        rk['tone_option'] = request.POST.get('tone_option')
         return rk
