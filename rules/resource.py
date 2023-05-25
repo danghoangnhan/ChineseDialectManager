@@ -1,5 +1,4 @@
 from import_export import resources, fields
-
 from dictionaries.models import dictionary
 from rules.models import rules
 

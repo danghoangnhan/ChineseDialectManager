@@ -27,8 +27,8 @@ class VocabularyAdmin(DjangoObjectActions,
     actions = ['export_as_csv']
     # change_list_template = "../templates/dictionaries/vocabulary/change_list.html"
     resource_class = VocabularyAdminResource
-    # import_form_class = VocabularyImportForm
-    # confirm_form_class = VocabularyConfirmImportForm
+    import_form_class = VocabularyImportForm
+    confirm_form_class = VocabularyConfirmImportForm
 
     @admin.action(description=' export to dictionary format csv')
     def export_as_csv(self, request, queryset):

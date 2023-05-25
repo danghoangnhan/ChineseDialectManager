@@ -44,7 +44,7 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         self.tone_decoder = {}
         self.tone_encoder = {}
         self.dictionary = None
-        self.dictconvert =None
+        self.dictconvert = None
         # Initialize an empty dictionary
 
         self.tone_decoder = tone_decode_mapper("A_T")
@@ -70,23 +70,24 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
     def before_import(self, dataset, using_transactions, dry_run, **kwargs):
         word_list = [str(element) for element in dataset['字']]
         symbol_text_list = [str(element).lower() for element in dataset['音']]
-        ipa_list = [self.dictconvert.chaoshan2IPA(element) for element in symbol_text_list]
-        dictionary_list = ([str(self.dictionary.name) for _ in word_list])
+
+        if self.dictionary is not None:
+            dictionary_list = ([str(self.dictionary.name) for _ in word_list])
+            dataset.insert_col(3, col=dictionary_list, header="dictionary_name")
+
+        if self.dictconvert is not None:
+            ipa_list = [self.dictconvert.chaoshan2IPA(element) for element in symbol_text_list]
+            dataset.insert_col(4, col=ipa_list, header="ipa")
+
+        if self.tone_encoder is not None:
+            tone_list = ([self.convert_tone(element) for element in dataset['聲調']])
+            del dataset['聲調']
+            dataset.insert_col(2, col=tone_list, header="聲調")
 
         del dataset['字']
         del dataset['音']
-        dataset.insert_col(
-            0, col=word_list, header="字"
-        )
-        dataset.insert_col(
-            1, col=symbol_text_list, header="音"
-        )
-        dataset.insert_col(
-            2, col=dictionary_list, header="dictionary_name"
-        )
-        dataset.insert_col(
-            3, col=dictionary_list, header="ipa"
-        )
+        dataset.insert_col(0, col=word_list, header="字")
+        dataset.insert_col(1, col=symbol_text_list, header="音")
         return dataset
 
     # def before_save_instance(self, instance, using_transactions, dry_run):
@@ -111,13 +112,8 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
     #     row['聲調'] = self.convert_tone(int(row['聲調']))
     #     instance.dry_run = dry_run
 
-    @receiver(post_save, sender=vocabulary)
-    def my_callback(sender, **kwargs):
-        return
-
     def convert_tone(self, tone_original):
         if tone_original in self.tone_encoder:
             key1, key2 = self.tone_encoder.get(tone_original)
             return self.tone_decoder.get((key1, key2), -1)
         return -1  # Return -1 if the encoded value is not found in the encode mapper
-
