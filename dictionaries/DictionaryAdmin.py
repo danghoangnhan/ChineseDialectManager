@@ -8,6 +8,7 @@ from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 
 from dictionaries.VocabularyModel import vocabulary
+from dictionaries.dictionary_resource import DictionaryAdminResource
 from dictionaries.form import DictionaryExportForm
 from dictionaries.models import dictionary
 
@@ -24,6 +25,7 @@ class DictionaryAdmin(DjangoObjectActions,
     # change_list_template = "..dictionaries/dictionary/change_list.html"
     actions = ['merge_duplicated_words']
     export_form_class = DictionaryExportForm
+    resource_class = DictionaryAdminResource
 
     # class Media:
     #     js = ('../static/dictionary/dictionary_admin.js',)  # Path to your JavaScript file
@@ -77,3 +79,8 @@ class DictionaryAdmin(DjangoObjectActions,
                     rowValue.append(None)
             writer.writerow(rowValue)
         return response
+
+    def get_resource_kwargs(self, request, *args, **kwargs):
+        rk = super().get_resource_kwargs(request, *args, **kwargs)
+        rk['tone_option'] = request.POST.get('tone_option')
+        return rk

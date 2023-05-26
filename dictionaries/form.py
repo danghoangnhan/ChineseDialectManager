@@ -17,6 +17,12 @@ class VocabularyImportForm(ImportForm):
 class DictionaryExportForm(ExportForm):
     tone_option = forms.ChoiceField(choices=lambda: [(element['country_type'], element['country_type']) for element in
                                                      ToneRules.objects.values('country_type').distinct()])
+    checkbox_field = forms.MultipleChoiceField(
+        label="select dictionary",
+        widget=forms.CheckboxSelectMultiple,
+        choices=lambda: [(obj.id, obj.name) for obj in dictionary.objects.all()]
+    )
+
 
 class VocabularyConfirmImportForm(ConfirmImportForm):
     dictionary_name = forms.ModelChoiceField(label="dictionary name", queryset=dictionary.objects.all())

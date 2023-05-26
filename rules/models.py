@@ -40,3 +40,24 @@ class rules(models.Model):
 
     def __str__(self):
         return self.name
+def tone_encode_mapper(country_type):
+    tone_rules = ToneRules.objects.filter(country_type=country_type)
+    type_mappings = {}
+    for tone_rule in tone_rules:
+        type_mappings[int(tone_rule.flat)] = (tone_rule.type, "flat")
+        type_mappings[int(tone_rule.up)] = (tone_rule.type, "up")
+        type_mappings[int(tone_rule.go)] = (tone_rule.type, "go")
+        type_mappings[int(tone_rule.into)] = (tone_rule.type, "into")
+    return type_mappings
+
+
+def tone_decode_mapper(country_type):
+    tone_rules = ToneRules.objects.filter(country_type=country_type)
+    type_mappings = {}
+
+    for tone_rule in tone_rules:
+        type_mappings[(tone_rule.type, "flat")] = int(tone_rule.flat)
+        type_mappings[(tone_rule.type, "up")] = int(tone_rule.up)
+        type_mappings[(tone_rule.type, "go")] = int(tone_rule.go)
+        type_mappings[(tone_rule.type, "into")] = int(tone_rule.into)
+    return type_mappings

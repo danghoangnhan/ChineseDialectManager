@@ -1,37 +1,23 @@
-from import_export import resources, fields
+from import_export import resources
 from import_export.admin import ImportMixin
 
-from consonant import Dictionary as DictConvert
 from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
-from rules.models import rules, ToneRules, tone_encode_mapper, tone_decode_mapper
+from rules.models import tone_decode_mapper, tone_encode_mapper
 
 
-class VocabularyAdminResource(ImportMixin, resources.ModelResource):
-    word = fields.Field(column_name='音', attribute='word')
-    symbol_text = fields.Field(column_name='字', attribute='symbol_text')
-    tone = fields.Field(column_name='聲調', attribute='tone')
-    dictionary_name = fields.Field(column_name='dictionary_name', attribute='dictionary_name')
-    ipa = fields.Field(column_name='ipa', attribute='ipa')
+class DictionaryAdminResource(ImportMixin, resources.ModelResource):
 
-    def __init__(self, dictionary_name=None, tone_option=None):
+    def __init__(self, tone_option=None):
         super().__init__()
         self.tone_decoder = {}
         self.tone_encoder = {}
-        self.dictionary = None
-        self.dictconvert = None
-
         self.tone_decoder = tone_decode_mapper("A_T")
-        if dictionary_name is not None:
-            self.dictionary: dictionary = dictionary.objects.filter(id=int(dictionary_name)).first()
-            ruleList = [rule for rule in rules.objects.filter(dictionary_name__exact=self.dictionary.name)]
-            self.dictconvert = DictConvert(ruleList)
-
         if tone_option is not None:
             self.tone_encoder = tone_encode_mapper(str(tone_option))
 
     class Meta:
-        model = vocabulary
+        model = dictionary
         # use_bulk = True
         # batch_size = 10000
         exclude = ('id')
@@ -44,10 +30,6 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
     def before_import(self, dataset, using_transactions, dry_run, **kwargs):
         word_list = [str(element) for element in dataset['字']]
         symbol_text_list = [str(element).lower() for element in dataset['音']]
-
-        if self.dictionary is not None:
-            dictionary_list = ([str(self.dictionary.name) for _ in word_list])
-            dataset.insert_col(3, col=dictionary_list, header="dictionary_name")
 
         if self.dictconvert is not None:
             ipa_list = [self.dictconvert.chaoshan2IPA(element) for element in symbol_text_list]
