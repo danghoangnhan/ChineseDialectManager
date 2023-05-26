@@ -29,7 +29,6 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
 
         if tone_option is not None:
             self.tone_encoder = tone_encode_mapper(str(tone_option))
-
     class Meta:
         model = vocabulary
         # use_bulk = True

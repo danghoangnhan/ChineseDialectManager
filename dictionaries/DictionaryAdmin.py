@@ -1,6 +1,6 @@
 import csv
 from collections import defaultdict
-
+from import_export.formats.base_formats import DEFAULT_FORMATS
 from django.contrib import admin
 from django.http import HttpResponse
 from django_admin_row_actions import AdminRowActionsMixin
@@ -82,5 +82,8 @@ class DictionaryAdmin(DjangoObjectActions,
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
+        file_format_id = int(request.POST.get('file_format'))
+        rk['file_format'] = DEFAULT_FORMATS[file_format_id-1].CONTENT_TYPE
         rk['tone_option'] = request.POST.get('tone_option')
+        rk['checkbox_field'] = request.POST.getlist('checkbox_field')
         return rk
