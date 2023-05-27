@@ -30,7 +30,7 @@ class VocabularyAdmin(DjangoObjectActions,
     import_form_class = VocabularyImportForm
     # confirm_form_class = VocabularyConfirmImportForm
     cache = {}
-
+    list_filter = ['dictionary_name']
     @admin.action(description=' export to dictionary format csv')
     def export_as_csv(self, request, queryset):
         meta = vocabulary._meta

@@ -66,7 +66,8 @@ def tone_decode_mapper(country_type):
     return type_mappings
 
 
-def convert_tone(tone_original, tone_encoder, tone_decoder):
+def convert_tone(tone_original:int, tone_encoder, tone_decoder):
+    tone_original = int(tone_original)
     if tone_original in tone_encoder:
         key1, key2 = tone_encoder.get(tone_original)
         return tone_decoder.get((key1, key2), -1)

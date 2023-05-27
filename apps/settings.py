@@ -80,7 +80,6 @@ DATABASES = {
     }
 }
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -119,4 +118,4 @@ IMPORT_EXPORT_CELERY_MODELS = {
 # IMPORT_EXPORT_USE_TRANSACTIONS = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True
+IMPORT_EXPORT_SKIP_ADMIN_CONFIRM = True

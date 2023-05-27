@@ -1,3 +1,7 @@
+from django.core.exceptions import MultipleObjectsReturned
+from django.db import transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from import_export import resources, fields
 from import_export.admin import ImportMixin
 import pandas as pd
@@ -34,9 +38,9 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
     class Meta:
         model = vocabulary
         use_bulk = True
-        batch_size = 10000
-        exclude = ('id')
-        import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name']
+        batch_size = 100000
+        # exclude = ('id')
+        # import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name','ipa']
         store_row_values = True
         # # skip_html_diff = True
         # use_transactions = True
@@ -62,35 +66,52 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
 
         if self.dictconvert is not None:
             df['ipa'] = df['音'].apply(self.dictconvert.chaoshan2IPA)
+
+        # Remove duplicate rows
+        df.drop_duplicates(inplace=True)
+        # Check for duplicate rows
+
         dataset.wipe()
         headers = []
         for column in df.columns:
-            # Get the values of the column
-            col_values = df[column].tolist()
-            # Insert the column into the dataset
             headers.append(column)
-            dataset.append_col(col=col_values, header=column)
+            dataset.append_col(col=df[column].tolist(), header=column)
         dataset.headers = headers
         return dataset
 
-    # def before_save_instance(self, instance, using_transactions, dry_run):
-    #     print(type(instance))
-    #     instance.symbol_text = str(instance.symbol_text)
-    #     instance.word = str(instance.word).lower()
-    #     instance.ipa = self.dictconvert.chaoshan2IPA(instance.word)
-    #     instance.dictionary_name = str(self.dictionary.name)
+    def before_save_instance(self, instance, using_transactions, dry_run):
+        # during 'confirm' step, dry_run is True
+        instance.dry_run = dry_run
 
-    # def before_import_row(self, row, row_number=None, **kwargs):
-    #     row['dictionary_name'] = self.dictionary.name
-    #     row['字'] = str(row['字'])
-    #     row['音'] = str(row['音']).lower()
-    #     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
-    #     row['聲調'] = self.convert_tone(int(row['聲調']))
 
-    # def before_save_instance(instance, using_transactions, dry_run):
-    #     row['dictionary_name'] = self.dictionary.name
-    #     row['字'] = str(row['字'])
-    #     row['音'] = str(row['音']).lower()
-    #     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
-    #     row['聲調'] = self.convert_tone(int(row['聲調']))
-    #     instance.dry_run = dry_run
+@receiver(post_save, sender=vocabulary)
+def my_callback(sender, **kwargs):
+    instance = kwargs["instance"]
+    if getattr(instance, "dry_run"):
+        # no-op if this is the 'confirm' step
+        return
+    else:
+        # your custom logic here
+        # this will be executed only on the 'import' step
+        pass
+# def before_save_instance(self, instance, using_transactions, dry_run):
+#     print(type(instance))
+#     instance.symbol_text = str(instance.symbol_text)
+#     instance.word = str(instance.word).lower()
+#     instance.ipa = self.dictconvert.chaoshan2IPA(instance.word)
+#     instance.dictionary_name = str(self.dictionary.name)
+
+# def before_import_row(self, row, row_number=None, **kwargs):
+#     row['dictionary_name'] = self.dictionary.name
+#     row['字'] = str(row['字'])
+#     row['音'] = str(row['音']).lower()
+#     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
+#     row['聲調'] = self.convert_tone(int(row['聲調']))
+
+# def before_save_instance(instance, using_transactions, dry_run):
+#     row['dictionary_name'] = self.dictionary.name
+#     row['字'] = str(row['字'])
+#     row['音'] = str(row['音']).lower()
+#     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
+#     row['聲調'] = self.convert_tone(int(row['聲調']))
+#     instance.dry_run = dry_run
