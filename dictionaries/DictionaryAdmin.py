@@ -13,6 +13,8 @@ from dictionaries.form import DictionaryExportForm
 from dictionaries.models import dictionary
 
 
+
+
 @admin.register(dictionary)
 class DictionaryAdmin(DjangoObjectActions,
                       AdminRowActionsMixin,
@@ -21,27 +23,9 @@ class DictionaryAdmin(DjangoObjectActions,
                       ExportActionMixin,
                       admin.ModelAdmin):
     list_display = ('name', 'description')
-    # change_list_template = "..dictionaries/dictionary/change_list.html"
     actions = ['merge_duplicated_words']
     export_form_class = DictionaryExportForm
     resource_class = DictionaryAdminResource
-
-    # class Media:
-    #     js = ('../static/dictionary/dictionary_admin.js',)  # Path to your JavaScript file
-
-    # def get_readonly_fields(self, request, obj=None):
-    #     readonly_fields = super().get_readonly_fields(request, obj)
-    #     if obj and not obj.enable_tone_convert:
-    #         readonly_fields += ('convert_type',)
-    #     return readonly_fields
-
-    # def changeform_view(self, request, *args, **kwargs):
-    #     self.readonly_fields = list(self.readonly_fields)
-    #     usergroup = request.user.groups.filter(name__in=['author']).exists()
-    #     if not usergroup:
-    #         self.readonly_fields.append('price_upgrade')
-    #
-    #     return super(DictionaryAdmin, self).changeform_view(request, *args, **kwargs)
 
     @admin.action(description=' merge duplicated words')
     def merge_duplicated_words(self, request, queryset):
@@ -82,7 +66,7 @@ class DictionaryAdmin(DjangoObjectActions,
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
         file_format_id = int(request.POST.get('file_format'))
-        rk['file_format'] = DEFAULT_FORMATS[file_format_id-1].CONTENT_TYPE
+        rk['file_format'] = DEFAULT_FORMATS[file_format_id - 1].CONTENT_TYPE
         rk['tone_option'] = request.POST.get('tone_option')
         rk['checkbox_field'] = request.POST.getlist('checkbox_field')
         return rk

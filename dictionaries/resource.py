@@ -38,7 +38,7 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
     class Meta:
         model = vocabulary
         use_bulk = True
-        batch_size = 100000
+        batch_size = 10000
         # exclude = ('id')
         # import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name','ipa']
         store_row_values = True
@@ -70,6 +70,7 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         # Remove duplicate rows
         df.drop_duplicates(inplace=True)
         # Check for duplicate rows
+
 
         dataset.wipe()
         headers = []
