@@ -8,8 +8,6 @@ enable_tone_option = [("1", "yes"), ("2", "no")]
 class dictionary(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=100)
-    input_tone = models.CharField(max_length=255, choices=tone_convert_type)
-    output_tone = models.CharField(max_length=255, choices=tone_convert_type)
 
     class Meta:
         db_table = 'dictionary'

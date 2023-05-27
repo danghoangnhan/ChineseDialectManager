@@ -28,7 +28,8 @@ class VocabularyAdmin(DjangoObjectActions,
     # change_list_template = "../templates/dictionaries/vocabulary/change_list.html"
     resource_class = VocabularyAdminResource
     import_form_class = VocabularyImportForm
-    confirm_form_class = VocabularyConfirmImportForm
+    # confirm_form_class = VocabularyConfirmImportForm
+    cache = {}
 
     @admin.action(description=' export to dictionary format csv')
     def export_as_csv(self, request, queryset):
@@ -69,6 +70,15 @@ class VocabularyAdmin(DjangoObjectActions,
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
-        rk['dictionary_name'] = request.POST.get('dictionary_name')
-        rk['tone_option'] = request.POST.get('tone_option')
+        if 'dictionary_name' not in self.cache:
+            if request.POST.get('dictionary_name') is not None:
+                self.cache['dictionary_name'] = request.POST.get('dictionary_name')
+        if 'tone_option' not in self.cache:
+            if request.POST.get('tone_option') is not None:
+                self.cache['tone_option'] = request.POST.get('tone_option')
+
+        rk['dictionary_name'] = self.cache['dictionary_name'] if 'dictionary_name' in self.cache else request.POST.get(
+            'dictionary_name')
+        rk['tone_option'] = self.cache['tone_option'] if 'tone_option' in self.cache else request.POST.get(
+            'tone_option')
         return rk

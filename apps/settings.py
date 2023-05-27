@@ -66,7 +66,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'apps.wsgi.application'
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -75,8 +74,12 @@ DATABASES = {
         'PASSWORD': 'dictionary',
         'HOST': '140.136.149.212',  # Or an IP Address that your DB is hosted on
         'PORT': '3313',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        }
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -116,3 +119,4 @@ IMPORT_EXPORT_CELERY_MODELS = {
 # IMPORT_EXPORT_USE_TRANSACTIONS = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True

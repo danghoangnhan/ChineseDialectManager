@@ -1,10 +1,11 @@
 from import_export import resources, fields
 from import_export.admin import ImportMixin
+import pandas as pd
 
 from consonant import Dictionary as DictConvert
 from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
-from rules.models import rules, ToneRules, tone_encode_mapper, tone_decode_mapper
+from rules.models import rules, ToneRules, tone_encode_mapper, tone_decode_mapper, convert_tone
 
 
 class VocabularyAdminResource(ImportMixin, resources.ModelResource):
@@ -29,38 +30,47 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
 
         if tone_option is not None:
             self.tone_encoder = tone_encode_mapper(str(tone_option))
+
     class Meta:
         model = vocabulary
-        # use_bulk = True
-        # batch_size = 10000
+        use_bulk = True
+        batch_size = 10000
         exclude = ('id')
         import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name']
-        # store_row_values = True
+        store_row_values = True
         # # skip_html_diff = True
         # use_transactions = True
         # force_init_instance = False
 
     def before_import(self, dataset, using_transactions, dry_run, **kwargs):
-        word_list = [str(element) for element in dataset['字']]
-        symbol_text_list = [str(element).lower() for element in dataset['音']]
+        df = pd.DataFrame(dataset.dict)
+        # Remove rows with None values
+        df = df.dropna()
+        # Convert 'symbol_text' column to lowercase
+        df['音'] = df['音'].str.lower()
 
-        if self.dictionary is not None:
-            dictionary_list = ([str(self.dictionary.name) for _ in word_list])
-            dataset.insert_col(3, col=dictionary_list, header="dictionary_name")
-
-        if self.dictconvert is not None:
-            ipa_list = [self.dictconvert.chaoshan2IPA(element) for element in symbol_text_list]
-            dataset.insert_col(4, col=ipa_list, header="ipa")
+        # Assuming dataset is a pandas DataFrame
+        df['字'] = df['字'].astype(str)
 
         if self.tone_encoder is not None:
-            tone_list = ([self.convert_tone(element) for element in dataset['聲調']])
-            del dataset['聲調']
-            dataset.insert_col(2, col=tone_list, header="聲調")
+            df['聲調'] = df['聲調'].apply(
+                lambda x: convert_tone(tone_original=x, tone_decoder=self.tone_decoder, tone_encoder=self.tone_encoder)
+            )
 
-        del dataset['字']
-        del dataset['音']
-        dataset.insert_col(0, col=word_list, header="字")
-        dataset.insert_col(1, col=symbol_text_list, header="音")
+        if self.dictionary is not None:
+            df['dictionary_name'] = self.dictionary.name
+
+        if self.dictconvert is not None:
+            df['ipa'] = df['音'].apply(self.dictconvert.chaoshan2IPA)
+        dataset.wipe()
+        headers = []
+        for column in df.columns:
+            # Get the values of the column
+            col_values = df[column].tolist()
+            # Insert the column into the dataset
+            headers.append(column)
+            dataset.append_col(col=col_values, header=column)
+        dataset.headers = headers
         return dataset
 
     # def before_save_instance(self, instance, using_transactions, dry_run):
@@ -84,9 +94,3 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
     #     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
     #     row['聲調'] = self.convert_tone(int(row['聲調']))
     #     instance.dry_run = dry_run
-
-    def convert_tone(self, tone_original):
-        if tone_original in self.tone_encoder:
-            key1, key2 = self.tone_encoder.get(tone_original)
-            return self.tone_decoder.get((key1, key2), -1)
-        return -1  # Return -1 if the encoded value is not found in the encode mapper

@@ -20,8 +20,7 @@ class DictionaryAdmin(DjangoObjectActions,
                       ImportExportActionModelAdmin,
                       ExportActionMixin,
                       admin.ModelAdmin):
-    list_display = ('name', 'description', 'input_tone', 'output_tone')
-    list_editable = ('input_tone', 'output_tone')
+    list_display = ('name', 'description')
     # change_list_template = "..dictionaries/dictionary/change_list.html"
     actions = ['merge_duplicated_words']
     export_form_class = DictionaryExportForm
