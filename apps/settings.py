@@ -38,13 +38,12 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'author.middlewares.AuthorDefaultBackendMiddleware'
 ]
-BROKER_URL = os.environ.get("REDIS_URL", "redis://redis")
-REDIS_URL = os.environ.get("REDIS_URL", "redis://redis")
+
 
 ROOT_URLCONF = 'apps.urls'
 
