@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     'django_admin_row_actions',
     'django_object_actions',
     'import_export',
-    'import_export_celery'
 ]
 
 MIDDLEWARE = [
@@ -112,9 +111,7 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEBUG = True
 urllib3.disable_warnings()
-IMPORT_EXPORT_CELERY_MODELS = {
-    "Winner": {"app_label": "winners", "model_name": "Winner"}
-}
+
 # IMPORT_EXPORT_USE_TRANSACTIONS = False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
