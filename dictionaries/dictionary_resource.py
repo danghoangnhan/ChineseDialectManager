@@ -40,7 +40,7 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
             join_conditions = Q()
             select_columns = []
             join_statements = []
-            where_conditions = []
+            where_conditions = Q()
 
             for i, element in enumerate(self.dictionary_list):
                 queryset_word: str = "v{index}.{field}".format(index=i + 1, field="word")
@@ -58,14 +58,14 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
                 self.fields[queryset_ipa] = fields.Field(column_name=header_ipa, attribute=queryset_ipa)
 
                 # Use Q object to construct the join condition
-                join_condition = Q(**{f"v{i+1}__symbol_text": F("v1__symbol_text")})
-
+                join_condition = Q(**{f"v{i + 1}__symbol_text": F("v1__symbol_text")})
+                where_condition = Q(dictionary_name=element.name)
                 if i + 1 > 1:
                     join_statements.append(
                         "LEFT JOIN vocabulary AS v{index} ON v1.symbol_text = v{index}.symbol_text".format(index=i + 1)
                     )
-                    join_condition &= Q(**{f"v{i+1}__symbol_text": F("v1__symbol_text")})
-                    where_conditions.append(join_condition)
+                    join_conditions &= Q(**{f"v{i + 1}__symbol_text": F("v1__symbol_text")})
+                where_conditions &= where_condition
             # Construct the SQL query
             self.sql_query = """
                SELECT v1.symbol_text, {select_columns}
@@ -82,33 +82,6 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
             self.queryset = vocabulary.objects.filter(*where_conditions)
             print(self.queryset)
 
-    # class Meta:
-    #     model = dictionary
-
     def get_queryset(self):
         queryset = vocabulary.objects.extra(where=[], tables=["vocabulary"], where_select=[self.sql_query])
         return queryset
-
-
-    def export(self, queryset=None, *args, **kwargs):
-        """
-        Exports a resource.
-        """
-
-        self.before_export(queryset, *args, **kwargs)
-
-        if queryset is None:
-            queryset = self.get_queryset()
-        headers = self.get_export_headers()
-        data = tablib.Dataset(headers=headers)
-        for item in queryset:
-            symbol_text = item.symbol_text
-            word = item.word
-            ipa = item.ipa
-            tone = item.tone
-        for obj in self.iter_queryset(queryset):
-            data.append(self.export_resource(obj))
-
-        self.after_export(queryset, data, *args, **kwargs)
-
-        return data
