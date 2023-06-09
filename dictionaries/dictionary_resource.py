@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from import_export import resources, fields
 from import_export.admin import ImportMixin
+from numba import np
 
 from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
@@ -60,7 +61,7 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
         for column in df.columns:
             if column.endswith(header["tone"]):
                 converted_column = [convert_tone(
-                    tone_original=int(float(element)),
+                    tone_original=numerical(element),  # Convert string to float, then round to int
                     tone_decoder=self.tone_decoder,
                     tone_encoder=self.tone_encoder)
                     for element in df[column].tolist()]
@@ -82,3 +83,11 @@ def my_callback(sender, **kwargs):
         # your custom logic here
         # this will be executed only on the 'import' step
         pass
+
+
+def numerical(value):
+    try:
+        result = int(float(value))
+        return result
+    except ValueError:
+        return -1
