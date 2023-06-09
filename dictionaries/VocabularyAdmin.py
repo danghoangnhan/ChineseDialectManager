@@ -8,7 +8,7 @@ from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 
 from dictionaries.VocabularyModel import vocabulary
-from dictionaries.form import VocabularyImportForm, VocabularyConfirmImportForm
+from dictionaries.form import VocabularyImportForm, VocabularyConfirmImportForm, VocabularyExportForm
 from dictionaries.resource import VocabularyAdminResource
 
 
@@ -31,6 +31,7 @@ class VocabularyAdmin(DjangoObjectActions,
     # confirm_form_class = VocabularyConfirmImportForm
     cache = {}
     list_filter = ['dictionary_name']
+    export_form_class = VocabularyExportForm
     @admin.action(description=' export to dictionary format csv')
     def export_as_csv(self, request, queryset):
         meta = vocabulary._meta

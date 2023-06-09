@@ -13,8 +13,6 @@ from dictionaries.form import DictionaryExportForm
 from dictionaries.models import dictionary
 
 
-
-
 @admin.register(dictionary)
 class DictionaryAdmin(DjangoObjectActions,
                       AdminRowActionsMixin,
@@ -34,7 +32,6 @@ class DictionaryAdmin(DjangoObjectActions,
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename={}.csv'.format(vocabulary._meta)
         writer = csv.writer(response)
-        v = defaultdict(dict)
         datalist = [obj for obj in queryset]
         dictionary_list = set([getattr(obj, 'dictionary_name') for obj in datalist])
         mapping = defaultdict(dict)

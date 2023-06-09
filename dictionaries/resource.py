@@ -70,8 +70,6 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         # Remove duplicate rows
         df.drop_duplicates(inplace=True)
         # Check for duplicate rows
-
-
         dataset.wipe()
         headers = []
         for column in df.columns:
@@ -84,6 +82,13 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         # during 'confirm' step, dry_run is True
         instance.dry_run = dry_run
 
+    def get_resource_queryset(self):
+        # Customize the queryset based on your requirements
+        queryset = vocabulary.objects.filter(name__icontains='example')
+        return queryset
+
+    def after_export(self, queryset, data, *args, **kwargs):
+        print(data)
 
 @receiver(post_save, sender=vocabulary)
 def my_callback(sender, **kwargs):
