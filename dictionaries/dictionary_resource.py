@@ -5,7 +5,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from import_export import resources, fields
 from import_export.admin import ImportMixin
-from numba import np
 
 from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
