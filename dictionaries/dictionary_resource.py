@@ -1,6 +1,8 @@
 from collections import OrderedDict, defaultdict
 
 import pandas as pd
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from import_export import resources, fields
 from import_export.admin import ImportMixin
 
@@ -68,3 +70,15 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
             headers.append(column)
         data.headers = headers
         return data
+
+
+@receiver(post_save, sender=vocabulary)
+def my_callback(sender, **kwargs):
+    instance = kwargs["instance"]
+    if getattr(instance, "dry_run"):
+        # no-op if this is the 'confirm' step
+        return
+    else:
+        # your custom logic here
+        # this will be executed only on the 'import' step
+        pass

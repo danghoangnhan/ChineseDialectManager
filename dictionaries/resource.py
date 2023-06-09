@@ -90,6 +90,7 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
     def after_export(self, queryset, data, *args, **kwargs):
         print(data)
 
+
 @receiver(post_save, sender=vocabulary)
 def my_callback(sender, **kwargs):
     instance = kwargs["instance"]
