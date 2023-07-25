@@ -1,27 +1,69 @@
+import csv
+from collections import defaultdict
+from import_export.formats.base_formats import DEFAULT_FORMATS
 from django.contrib import admin
+from django.http import HttpResponse
+from django_admin_row_actions import AdminRowActionsMixin
+from django_object_actions import DjangoObjectActions
+from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 
+from dictionaries.VocabularyModel import vocabulary
+from dictionaries.dictionary_resource import DictionaryAdminResource
+from dictionaries.form import DictionaryExportForm
 from dictionaries.models import dictionary
 
 
 @admin.register(dictionary)
-class DictionaryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'input_tone', 'output_tone')
-    list_editable = ('input_tone', 'output_tone')
-    # change_list_template = "..dictionaries/dictionary/change_list.html"
+class DictionaryAdmin(DjangoObjectActions,
+                      AdminRowActionsMixin,
+                      ImportExportMixin,
+                      ImportExportActionModelAdmin,
+                      ExportActionMixin,
+                      admin.ModelAdmin):
+    list_display = ('name', 'description')
+    actions = ['merge_duplicated_words']
+    export_form_class = DictionaryExportForm
+    resource_class = DictionaryAdminResource
 
-    class Media:
-        js = ('../static/dictionary/dictionary_admin.js',)  # Path to your JavaScript file
+    @admin.action(description=' merge duplicated words')
+    def merge_duplicated_words(self, request, queryset):
+        header = ['字']
+        template = ['音', '聲調', 'IPA']
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(vocabulary._meta)
+        writer = csv.writer(response)
+        datalist = [obj for obj in queryset]
+        dictionary_list = set([getattr(obj, 'dictionary_name') for obj in datalist])
+        mapping = defaultdict(dict)
+        for data_element in datalist:
+            if mapping.get(data_element) is None:
+                mapping[getattr(data_element, 'word')] = defaultdict()
+            mapping[getattr(data_element, 'word')][getattr(data_element, 'dictionary_name')] = data_element
 
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = super().get_readonly_fields(request, obj)
-        if obj and not obj.enable_tone_convert:
-            readonly_fields += ('convert_type',)
-        return readonly_fields
+        for dictionary_name in dictionary_list:
+            for col in template:
+                header.append(dictionary_name + '_' + col)
+        writer.writerow(header)
+        for key in mapping:
+            rowValue = [key]
+            inode = mapping.get(key)
+            for dictionary_name in dictionary_list:
+                obj = inode.get(dictionary_name)
+                if obj is not None:
+                    rowValue.append(getattr(obj, 'word'))
+                    rowValue.append(getattr(obj, 'tone'))
+                    rowValue.append(getattr(obj, 'ipa'))
+                else:
+                    rowValue.append(None)
+                    rowValue.append(None)
+                    rowValue.append(None)
+            writer.writerow(rowValue)
+        return response
 
-    def changeform_view(self, request, *args, **kwargs):
-        self.readonly_fields = list(self.readonly_fields)
-        usergroup = request.user.groups.filter(name__in=['author']).exists()
-        if not usergroup:
-            self.readonly_fields.append('price_upgrade')
-
-        return super(DictionaryAdmin, self).changeform_view(request, *args, **kwargs)
+    def get_resource_kwargs(self, request, *args, **kwargs):
+        rk = super().get_resource_kwargs(request, *args, **kwargs)
+        file_format_id = int(request.POST.get('file_format'))
+        rk['file_format'] = DEFAULT_FORMATS[file_format_id - 1].CONTENT_TYPE
+        rk['tone_option'] = request.POST.get('tone_option')
+        rk['checkbox_field'] = request.POST.getlist('checkbox_field')
+        return rk

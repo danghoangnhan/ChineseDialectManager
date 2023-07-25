@@ -14,6 +14,7 @@ class ToneRules(models.Model):
 
     class Meta:
         db_table = 'tone_rules'
+
     def __unicode__(self):
         return self.country_type
 
@@ -40,3 +41,34 @@ class rules(models.Model):
 
     def __str__(self):
         return self.name
+
+
+def tone_encode_mapper(country_type):
+    tone_rules = ToneRules.objects.filter(country_type=country_type)
+    type_mappings = {}
+    for tone_rule in tone_rules:
+        type_mappings[int(tone_rule.flat)] = (tone_rule.type, "flat")
+        type_mappings[int(tone_rule.up)] = (tone_rule.type, "up")
+        type_mappings[int(tone_rule.go)] = (tone_rule.type, "go")
+        type_mappings[int(tone_rule.into)] = (tone_rule.type, "into")
+    return type_mappings
+
+
+def tone_decode_mapper(country_type):
+    tone_rules = ToneRules.objects.filter(country_type=country_type)
+    type_mappings = {}
+
+    for tone_rule in tone_rules:
+        type_mappings[(tone_rule.type, "flat")] = int(tone_rule.flat)
+        type_mappings[(tone_rule.type, "up")] = int(tone_rule.up)
+        type_mappings[(tone_rule.type, "go")] = int(tone_rule.go)
+        type_mappings[(tone_rule.type, "into")] = int(tone_rule.into)
+    return type_mappings
+
+
+def convert_tone(tone_original:int, tone_encoder, tone_decoder):
+    tone_original = int(tone_original)
+    if tone_original in tone_encoder:
+        key1, key2 = tone_encoder.get(tone_original)
+        return tone_decoder.get((key1, key2), -1)
+    return -1  # Return -1 if the encoded value is not found in the encode mapper

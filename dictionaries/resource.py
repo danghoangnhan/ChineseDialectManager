@@ -1,35 +1,15 @@
+from django.core.exceptions import MultipleObjectsReturned
+from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from import_export import resources, fields
 from import_export.admin import ImportMixin
+import pandas as pd
 
 from consonant import Dictionary as DictConvert
 from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
-from rules.models import rules, ToneRules
-
-
-def tone_encode_mapper(country_type):
-    tone_rules = ToneRules.objects.filter(country_type=country_type)
-    type_mappings = {}
-    for tone_rule in tone_rules:
-        type_mappings[int(tone_rule.flat)] = (tone_rule.type, "flat")
-        type_mappings[int(tone_rule.up)] = (tone_rule.type, "up")
-        type_mappings[int(tone_rule.go)] = (tone_rule.type, "go")
-        type_mappings[int(tone_rule.into)] = (tone_rule.type, "into")
-    return type_mappings
-
-
-def tone_decode_mapper(country_type):
-    tone_rules = ToneRules.objects.filter(country_type=country_type)
-    type_mappings = {}
-
-    for tone_rule in tone_rules:
-        type_mappings[(tone_rule.type, "flat")] = int(tone_rule.flat)
-        type_mappings[(tone_rule.type, "up")] = int(tone_rule.up)
-        type_mappings[(tone_rule.type, "go")] = int(tone_rule.go)
-        type_mappings[(tone_rule.type, "into")] = int(tone_rule.into)
-    return type_mappings
+from rules.models import rules, ToneRules, tone_encode_mapper, tone_decode_mapper, convert_tone
 
 
 class VocabularyAdminResource(ImportMixin, resources.ModelResource):
@@ -44,8 +24,7 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         self.tone_decoder = {}
         self.tone_encoder = {}
         self.dictionary = None
-        self.dictconvert =None
-        # Initialize an empty dictionary
+        self.dictconvert = None
 
         self.tone_decoder = tone_decode_mapper("A_T")
         if dictionary_name is not None:
@@ -58,66 +37,88 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
 
     class Meta:
         model = vocabulary
-        # use_bulk = True
-        # batch_size = 10000
-        exclude = ('id')
-        import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name']
-        # store_row_values = True
+        use_bulk = True
+        batch_size = 10000
+        # exclude = ('id')
+        # import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name','ipa']
+        store_row_values = True
         # # skip_html_diff = True
         # use_transactions = True
         # force_init_instance = False
 
     def before_import(self, dataset, using_transactions, dry_run, **kwargs):
-        word_list = [str(element) for element in dataset['字']]
-        symbol_text_list = [str(element).lower() for element in dataset['音']]
-        ipa_list = [self.dictconvert.chaoshan2IPA(element) for element in symbol_text_list]
-        dictionary_list = ([str(self.dictionary.name) for _ in word_list])
+        df = pd.DataFrame(dataset.dict)
+        # Remove rows with None values
+        df = df.dropna()
+        # Convert 'symbol_text' column to lowercase
+        df['音'] = df['音'].str.lower()
 
-        del dataset['字']
-        del dataset['音']
-        dataset.insert_col(
-            0, col=word_list, header="字"
-        )
-        dataset.insert_col(
-            1, col=symbol_text_list, header="音"
-        )
-        dataset.insert_col(
-            2, col=dictionary_list, header="dictionary_name"
-        )
-        dataset.insert_col(
-            3, col=dictionary_list, header="ipa"
-        )
+        # Assuming dataset is a pandas DataFrame
+        df['字'] = df['字'].astype(str)
+
+        if self.tone_encoder is not None:
+            df['聲調'] = df['聲調'].apply(
+                lambda x: convert_tone(tone_original=x, tone_decoder=self.tone_decoder, tone_encoder=self.tone_encoder)
+            )
+
+        if self.dictionary is not None:
+            df['dictionary_name'] = self.dictionary.name
+
+        if self.dictconvert is not None:
+            df['ipa'] = df['音'].apply(self.dictconvert.chaoshan2IPA)
+
+        # Remove duplicate rows
+        df.drop_duplicates(inplace=True)
+        # Check for duplicate rows
+        dataset.wipe()
+        headers = []
+        for column in df.columns:
+            headers.append(column)
+            dataset.append_col(col=df[column].tolist(), header=column)
+        dataset.headers = headers
         return dataset
 
-    # def before_save_instance(self, instance, using_transactions, dry_run):
-    #     print(type(instance))
-    #     instance.symbol_text = str(instance.symbol_text)
-    #     instance.word = str(instance.word).lower()
-    #     instance.ipa = self.dictconvert.chaoshan2IPA(instance.word)
-    #     instance.dictionary_name = str(self.dictionary.name)
+    def before_save_instance(self, instance, using_transactions, dry_run):
+        # during 'confirm' step, dry_run is True
+        instance.dry_run = dry_run
 
-    # def before_import_row(self, row, row_number=None, **kwargs):
-    #     row['dictionary_name'] = self.dictionary.name
-    #     row['字'] = str(row['字'])
-    #     row['音'] = str(row['音']).lower()
-    #     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
-    #     row['聲調'] = self.convert_tone(int(row['聲調']))
+    def get_resource_queryset(self):
+        # Customize the queryset based on your requirements
+        queryset = vocabulary.objects.filter(name__icontains='example')
+        return queryset
 
-    # def before_save_instance(instance, using_transactions, dry_run):
-    #     row['dictionary_name'] = self.dictionary.name
-    #     row['字'] = str(row['字'])
-    #     row['音'] = str(row['音']).lower()
-    #     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
-    #     row['聲調'] = self.convert_tone(int(row['聲調']))
-    #     instance.dry_run = dry_run
+    def after_export(self, queryset, data, *args, **kwargs):
+        print(data)
 
-    @receiver(post_save, sender=vocabulary)
-    def my_callback(sender, **kwargs):
+
+@receiver(post_save, sender=vocabulary)
+def my_callback(sender, **kwargs):
+    instance = kwargs["instance"]
+    if getattr(instance, "dry_run"):
+        # no-op if this is the 'confirm' step
         return
+    else:
+        # your custom logic here
+        # this will be executed only on the 'import' step
+        pass
+# def before_save_instance(self, instance, using_transactions, dry_run):
+#     print(type(instance))
+#     instance.symbol_text = str(instance.symbol_text)
+#     instance.word = str(instance.word).lower()
+#     instance.ipa = self.dictconvert.chaoshan2IPA(instance.word)
+#     instance.dictionary_name = str(self.dictionary.name)
 
-    def convert_tone(self, tone_original):
-        if tone_original in self.tone_encoder:
-            key1, key2 = self.tone_encoder.get(tone_original)
-            return self.tone_decoder.get((key1, key2), -1)
-        return -1  # Return -1 if the encoded value is not found in the encode mapper
+# def before_import_row(self, row, row_number=None, **kwargs):
+#     row['dictionary_name'] = self.dictionary.name
+#     row['字'] = str(row['字'])
+#     row['音'] = str(row['音']).lower()
+#     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
+#     row['聲調'] = self.convert_tone(int(row['聲調']))
 
+# def before_save_instance(instance, using_transactions, dry_run):
+#     row['dictionary_name'] = self.dictionary.name
+#     row['字'] = str(row['字'])
+#     row['音'] = str(row['音']).lower()
+#     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
+#     row['聲調'] = self.convert_tone(int(row['聲調']))
+#     instance.dry_run = dry_run
