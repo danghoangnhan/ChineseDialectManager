@@ -16,3 +16,4 @@ gunicorn
 celery==5.0.5
 pandas
 urllib3
+python-dotenv==0.21.0

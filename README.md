@@ -54,7 +54,7 @@ MYSQL_PASSWORD=your-mysql-password
 docker-compose up
 ```
 
-3. Once the services are up and running, open your web browser and go to `http://127.0.0.1:8002/admin/` to access the Django Admin interface.
+4. Once the services are up and running, open your web browser and go to `http://127.0.0.1:8002/admin/` to access the Django Admin interface.
 
 4. Log in using the superuser account created during installation.
 
@@ -73,11 +73,3 @@ We welcome contributions to the Chinese Dialect Management System. If you find a
 5. Create a pull request.
 
 Please ensure to follow the existing code style and write unit tests for new features.
-
-## License
-
-Specify the license under which your project is released. For example:
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
