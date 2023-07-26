@@ -51,27 +51,35 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
                 mapping_result[data_element['symbol_text']][data_element["dictionary_name"]] = []
             mapping_result[data_element['symbol_text']][data_element["dictionary_name"]].append(data_element)
 
-        for data_element in values_list:
-            mapping[data_element['symbol_text']][header['symbol_text']] = data_element['symbol_text']
-
-            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["word"]] = data_element["word"]
-
-            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["tone"]] = data_element["tone"]
-
-            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["ipa"]] = data_element["ipa"]
-
-        for  data_element in mapping_result:
+        mapper = dict()
+        counter = 0
+        for key, value in mapping_result.items():
             current_row = [{
-                mapping[data_element['symbol_text']][header['symbol_text']] : data_element['symbol_text']
+                header['symbol_text']: key
             }]
             for dictionary_value in dictionary_name_list:
-                get_dictionary_item_list = mapping_result[dictionary_value]
-                for dictionary_item in get_dictionary_item_list:
-                    current_new_row = copy.deepcopy(current_row)
-                    for item in current_new_row:
+                if dictionary_value not in value:
+                    emptyObject = dict()
+                    emptyObject["word"] = ''
+                    emptyObject["tone"] = ''
+                    emptyObject["ipa"] = ''
+                    value.setdefault(dictionary_value, [emptyObject])
 
-        df = pd.DataFrame.from_dict(mapping, orient='index')
-        df.dropna(axis=0, how='any', inplace=True)  # Drop rows with NaN values
+                get_dictionary_item_list = value[dictionary_value]
+                result = []
+                for dictionary_item in get_dictionary_item_list:
+                    clone_props = copy.deepcopy(current_row)
+                    for item in clone_props:
+                        item[dictionary_value + "_" + header["word"]] = dictionary_item["word"]
+                        item[dictionary_value + "_" + header["tone"]] = dictionary_item["tone"]
+                        item[dictionary_value + "_" + header["ipa"]] = dictionary_item["ipa"]
+                        result.append(item)
+                current_row = result
+            for row in current_row:
+                mapper[counter] = row
+                counter += 1
+        df = pd.DataFrame.from_dict(mapper, orient='index')
+        # df.dropna(axis=0, how='any', inplace=True)  # Drop rows with NaN values
         data.wipe()
         for column in df.columns:
             if column.endswith(header["tone"]):
@@ -92,11 +100,8 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
 def my_callback(sender, **kwargs):
     instance = kwargs["instance"]
     if getattr(instance, "dry_run"):
-        # no-op if this is the 'confirm' step
         return
     else:
-        # your custom logic here
-        # this will be executed only on the 'import' step
         pass
 
 
