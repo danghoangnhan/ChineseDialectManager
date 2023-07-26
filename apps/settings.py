@@ -69,7 +69,7 @@ DATABASES = {
         'NAME': 'dictionary',
         'USER': 'root',
         'PASSWORD': 'dictionary',
-        'HOST': '140.136.149.212',  # Or an IP Address that your DB is hosted on
+        'HOST': '140.136.149.212',
         'PORT': '3313',
         'OPTIONS': {
             'charset': 'utf8mb4',

@@ -11,6 +11,7 @@ from rules.models import rules, tone_encode_mapper, tone_decode_mapper, convert_
 
 
 class VocabularyAdminResource(ImportMixin, resources.ModelResource):
+
     word = fields.Field(column_name='音', attribute='word')
     symbol_text = fields.Field(column_name='字', attribute='symbol_text')
     tone = fields.Field(column_name='聲調', attribute='tone')

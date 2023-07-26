@@ -4,7 +4,7 @@ from collections import OrderedDict, defaultdict
 import pandas as pd
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from import_export import resources, fields
+from import_export import resources
 from import_export.admin import ImportMixin
 
 from dictionaries.VocabularyModel import vocabulary
@@ -39,11 +39,12 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
             self.dictionary_list = dictionary.objects.filter(id__in=checkbox_field)
 
     def after_export(self, queryset, data, *args, **kwargs):
-        mapping = defaultdict(lambda: defaultdict(dict))
+
         dictionary_name_list = list(self.dictionary_list.values_list('name', flat=True))
         values_list = list(vocabulary.objects.filter(dictionary_name__in=dictionary_name_list).values())
         headers = []
         mapping_result = dict()
+
         for data_element in values_list:
             if data_element['symbol_text'] not in mapping_result:
                 mapping_result[data_element['symbol_text']] = dict()
@@ -79,7 +80,6 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
                 mapper[counter] = row
                 counter += 1
         df = pd.DataFrame.from_dict(mapper, orient='index')
-        # df.dropna(axis=0, how='any', inplace=True)  # Drop rows with NaN values
         data.wipe()
         for column in df.columns:
             if column.endswith(header["tone"]):
