@@ -2,7 +2,6 @@ from django import forms
 from import_export.forms import ImportForm, ConfirmImportForm, ExportForm
 
 from dictionaries.models import dictionary
-from rules.models import ToneRules
 
 tone_convert_type = [("B_C", "Chinese"), ("A_T", "Taiwan")]
 enable_tone_option = [("1", "yes"), ("2", "no")]

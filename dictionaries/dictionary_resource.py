@@ -1,3 +1,4 @@
+import copy
 from collections import OrderedDict, defaultdict
 
 import pandas as pd
@@ -42,17 +43,32 @@ class DictionaryAdminResource(ImportMixin, resources.ModelResource):
         dictionary_name_list = list(self.dictionary_list.values_list('name', flat=True))
         values_list = list(vocabulary.objects.filter(dictionary_name__in=dictionary_name_list).values())
         headers = []
+        mapping_result = dict()
+        for data_element in values_list:
+            if data_element['symbol_text'] not in mapping_result:
+                mapping_result[data_element['symbol_text']] = dict()
+            if data_element["dictionary_name"] not in mapping_result[data_element['symbol_text']]:
+                mapping_result[data_element['symbol_text']][data_element["dictionary_name"]] = []
+            mapping_result[data_element['symbol_text']][data_element["dictionary_name"]].append(data_element)
+
         for data_element in values_list:
             mapping[data_element['symbol_text']][header['symbol_text']] = data_element['symbol_text']
 
-            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["word"]] = data_element[
-                "word"]
+            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["word"]] = data_element["word"]
 
-            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["tone"]] = data_element[
-                "tone"]
+            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["tone"]] = data_element["tone"]
 
-            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["ipa"]] = data_element[
-                "ipa"]
+            mapping[data_element['symbol_text']][data_element['dictionary_name'] + "_" + header["ipa"]] = data_element["ipa"]
+
+        for  data_element in mapping_result:
+            current_row = [{
+                mapping[data_element['symbol_text']][header['symbol_text']] : data_element['symbol_text']
+            }]
+            for dictionary_value in dictionary_name_list:
+                get_dictionary_item_list = mapping_result[dictionary_value]
+                for dictionary_item in get_dictionary_item_list:
+                    current_new_row = copy.deepcopy(current_row)
+                    for item in current_new_row:
 
         df = pd.DataFrame.from_dict(mapping, orient='index')
         df.dropna(axis=0, how='any', inplace=True)  # Drop rows with NaN values

@@ -1,15 +1,13 @@
-from django.core.exceptions import MultipleObjectsReturned
-from django.db import transaction
+import pandas as pd
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from import_export import resources, fields
 from import_export.admin import ImportMixin
-import pandas as pd
 
 from consonant import Dictionary as DictConvert
 from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
-from rules.models import rules, ToneRules, tone_encode_mapper, tone_decode_mapper, convert_tone
+from rules.models import rules, tone_encode_mapper, tone_decode_mapper, convert_tone
 
 
 class VocabularyAdminResource(ImportMixin, resources.ModelResource):
@@ -39,12 +37,8 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         model = vocabulary
         use_bulk = True
         batch_size = 10000
-        # exclude = ('id')
-        # import_id_fields = ['word', 'symbol_text', 'tone', 'dictionary_name','ipa']
+
         store_row_values = True
-        # # skip_html_diff = True
-        # use_transactions = True
-        # force_init_instance = False
 
     def before_import(self, dataset, using_transactions, dry_run, **kwargs):
         df = pd.DataFrame(dataset.dict)
