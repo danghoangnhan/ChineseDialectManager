@@ -1,15 +1,23 @@
 import os
 from pathlib import Path
 import urllib3
+from pathlib import Path
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+env_path = str(BASE_DIR) +'/envs/prod.env'
+load_dotenv(dotenv_path=env_path)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ge356@&9l9=djmz073s&r7na@(bhf%r**tho)jt^din*sfs)1w'
+
+from dotenv import load_dotenv
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -71,6 +79,19 @@ DATABASES = {
         'PASSWORD': 'dictionary',
         'HOST': '140.136.149.212',
         'PORT': '3313',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        }
+    }
+}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
         'OPTIONS': {
             'charset': 'utf8mb4',
         }
