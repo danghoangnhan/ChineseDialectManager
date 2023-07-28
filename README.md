@@ -1,7 +1,7 @@
 
-# IPADictionaryAPI
+# ChineseDialectManager
 
-The IPADictionaryAPI is a web application built using Django and MySQL that serves as a Chinese dialect management system. It allows users to manage and organize information related to various Chinese dialects.
+The ChineseDialectManager is a web application built using Django and MySQL that serves as a Chinese dialect management system. It allows users to manage and organize information related to various Chinese dialects.
 
 ## Table of Contents
 
