@@ -27,12 +27,12 @@ Before the installation , ensure you have the following installed:
 
 ## Deployment Guide
 
-To deploy the IPADictionaryAPI using Docker and Docker Compose, follow the steps below:
+To deploy the ChineseDialectManager using Docker and Docker Compose, follow the steps below:
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/danghoangnhan/IPADictionaryAPI.git
+git clone https://github.com/danghoangnhan/ChineseDialectManager.git
 cd IPADictionaryAPI
 ```
 
