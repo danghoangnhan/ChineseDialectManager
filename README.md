@@ -36,7 +36,7 @@ git clone https://github.com/danghoangnhan/IPADictionaryAPI.git
 cd IPADictionaryAPI
 ```
 
-2. Create a `.env` file in the root directory of the project. Update the environment variables with your desired configuration:
+2. Create a prod.env file in the envs directory. Update the environment variables with your desired configuration:
 
 ```plaintext
 # .env file
@@ -51,7 +51,7 @@ MYSQL_PASSWORD=your-mysql-password
 3. Start the services (Django application and MySQL database):
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
 
 4. Once the services are up and running, open your web browser and go to `http://127.0.0.1:8002/admin/` to access the Django Admin interface.
