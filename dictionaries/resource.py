@@ -9,9 +9,27 @@ from dictionaries.VocabularyModel import vocabulary
 from dictionaries.models import dictionary
 from rules.models import rules, tone_encode_mapper, tone_decode_mapper, convert_tone
 
+header = {
+    'symbol_text': '字',
+    'word': '音',
+    'tone': '聲調',
+    'ipa': 'IPA',
+    'dictionary_name': 'dictionary_name'
+}
+
+
+def check_duplicate(df) -> list:
+    existed_indice = []
+    fields_to_check = ['word', 'symbol_text', 'tone', 'dictionary_name']
+    for index, row in df.iterrows():
+        row_to_check = {field: row[header[field]] for field in fields_to_check}
+        existing_record = vocabulary.objects.filter(**row_to_check).first()
+        if existing_record is not None:
+            existed_indice.append(index)
+    return existed_indice
+
 
 class VocabularyAdminResource(ImportMixin, resources.ModelResource):
-
     word = fields.Field(column_name='音', attribute='word')
     symbol_text = fields.Field(column_name='字', attribute='symbol_text')
     tone = fields.Field(column_name='聲調', attribute='tone')
@@ -38,8 +56,10 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         model = vocabulary
         use_bulk = True
         batch_size = 10000
-
+        skip_unchanged = True
         store_row_values = True
+        report_skipped = True
+        # import_id_fields = ('word', 'symbol_text', 'tone', 'dictionary_name', 'ipa')
 
     def before_import(self, dataset, using_transactions, dry_run, **kwargs):
         df = pd.DataFrame(dataset.dict)
@@ -64,6 +84,8 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
 
         # Remove duplicate rows
         df.drop_duplicates(inplace=True)
+        exist_indice = check_duplicate(df)
+        df = df.drop(index=exist_indice)
         # Check for duplicate rows
         dataset.wipe()
         headers = []
@@ -82,9 +104,6 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         queryset = vocabulary.objects.filter(name__icontains='example')
         return queryset
 
-    def after_export(self, queryset, data, *args, **kwargs):
-        print(data)
-
 
 @receiver(post_save, sender=vocabulary)
 def my_callback(sender, **kwargs):
@@ -96,24 +115,3 @@ def my_callback(sender, **kwargs):
         # your custom logic here
         # this will be executed only on the 'import' step
         pass
-# def before_save_instance(self, instance, using_transactions, dry_run):
-#     print(type(instance))
-#     instance.symbol_text = str(instance.symbol_text)
-#     instance.word = str(instance.word).lower()
-#     instance.ipa = self.dictconvert.chaoshan2IPA(instance.word)
-#     instance.dictionary_name = str(self.dictionary.name)
-
-# def before_import_row(self, row, row_number=None, **kwargs):
-#     row['dictionary_name'] = self.dictionary.name
-#     row['字'] = str(row['字'])
-#     row['音'] = str(row['音']).lower()
-#     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
-#     row['聲調'] = self.convert_tone(int(row['聲調']))
-
-# def before_save_instance(instance, using_transactions, dry_run):
-#     row['dictionary_name'] = self.dictionary.name
-#     row['字'] = str(row['字'])
-#     row['音'] = str(row['音']).lower()
-#     row['ipa'] = self.dictconvert.chaoshan2IPA(row['音'])
-#     row['聲調'] = self.convert_tone(int(row['聲調']))
-#     instance.dry_run = dry_run
