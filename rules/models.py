@@ -66,9 +66,12 @@ def tone_decode_mapper(country_type):
     return type_mappings
 
 
-def convert_tone(tone_original:int, tone_encoder, tone_decoder):
-    tone_original = int(tone_original)
-    if tone_original in tone_encoder:
-        key1, key2 = tone_encoder.get(tone_original)
-        return tone_decoder.get((key1, key2), -1)
-    return -1  # Return -1 if the encoded value is not found in the encode mapper
+def convert_tone(tone_original: int, tone_encoder, tone_decoder):
+    try:
+        tone_original = int(tone_original)
+        if tone_original in tone_encoder:
+            key1, key2 = tone_encoder.get(tone_original)
+            return tone_decoder.get((key1, key2), -1)
+    except Exception as e:
+        pass  # You can optionally print or log the exception for debugging purposes
+    return -1

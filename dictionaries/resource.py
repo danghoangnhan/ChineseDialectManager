@@ -99,11 +99,6 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
         # during 'confirm' step, dry_run is True
         instance.dry_run = dry_run
 
-    def get_resource_queryset(self):
-        # Customize the queryset based on your requirements
-        queryset = vocabulary.objects.filter(name__icontains='example')
-        return queryset
-
 
 @receiver(post_save, sender=vocabulary)
 def my_callback(sender, **kwargs):

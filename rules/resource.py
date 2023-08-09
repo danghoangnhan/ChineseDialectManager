@@ -1,6 +1,7 @@
 from import_export import resources, fields
 from dictionaries.models import dictionary
 from rules.models import rules
+import pandas as pd
 
 
 class RulesResource(resources.ModelResource):
@@ -22,9 +23,22 @@ class RulesResource(resources.ModelResource):
         batch_size = 1000
         skip_unchanged = True
         report_skipped = True
-        raise_errors = False
-        import_id_fields = ['name', 'unicode_repr', 'type', 'descriptors']
+        # import_id_fields = ['name', 'unicode_repr', 'type', 'descriptors']
 
-    def before_import_row(self, row, row_number=None, **kwargs):
+    # def before_import_row(self, row, row_number=None, **kwargs):
+    #     if self.dictionary is not None:
+    #         row['dictionary_name'] = self.dictionary.name
+
+    def before_import(self, dataset, using_transactions, dry_run, **kwargs):
+        df = pd.DataFrame(dataset.dict)
         if self.dictionary is not None:
-            row['dictionary_name'] = self.dictionary.name
+            df['dictionary_name'] = self.dictionary.name
+        # Remove duplicate rows
+        df.drop_duplicates(inplace=True)
+        dataset.wipe()
+        headers = []
+        for column in df.columns:
+            headers.append(column)
+            dataset.append_col(col=df[column].tolist(), header=column)
+        dataset.headers = headers
+        return dataset
