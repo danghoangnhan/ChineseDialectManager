@@ -22,6 +22,7 @@ class DictionaryAdmin(DjangoObjectActions,
                       admin.ModelAdmin):
     list_display = ('name', 'description')
     actions = ['merge_duplicated_words']
+    search_fields = ['name', 'description']
     export_form_class = DictionaryExportForm
     resource_class = DictionaryAdminResource
 

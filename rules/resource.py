@@ -25,10 +25,6 @@ class RulesResource(resources.ModelResource):
         report_skipped = True
         # import_id_fields = ['name', 'unicode_repr', 'type', 'descriptors']
 
-    # def before_import_row(self, row, row_number=None, **kwargs):
-    #     if self.dictionary is not None:
-    #         row['dictionary_name'] = self.dictionary.name
-
     def before_import(self, dataset, using_transactions, dry_run, **kwargs):
         df = pd.DataFrame(dataset.dict)
         if self.dictionary is not None:

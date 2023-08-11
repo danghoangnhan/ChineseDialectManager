@@ -2,7 +2,6 @@ import pandas as pd
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from import_export import resources, fields
-from import_export.admin import ImportMixin
 
 from consonant import Dictionary as DictConvert
 from dictionaries.VocabularyModel import vocabulary
@@ -29,7 +28,7 @@ def check_duplicate(df) -> list:
     return existed_indice
 
 
-class VocabularyAdminResource(ImportMixin, resources.ModelResource):
+class VocabularyAdminResource(resources.ModelResource):
     word = fields.Field(column_name='音', attribute='word')
     symbol_text = fields.Field(column_name='字', attribute='symbol_text')
     tone = fields.Field(column_name='聲調', attribute='tone')
@@ -84,8 +83,8 @@ class VocabularyAdminResource(ImportMixin, resources.ModelResource):
 
         # Remove duplicate rows
         df.drop_duplicates(inplace=True)
-        exist_indice = check_duplicate(df)
-        df = df.drop(index=exist_indice)
+        # exist_indice = check_duplicate(df)
+        # df = df.drop(index=exist_indice)
         # Check for duplicate rows
         dataset.wipe()
         headers = []

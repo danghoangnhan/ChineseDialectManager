@@ -20,8 +20,8 @@ class RulesAdmin(DjangoObjectActions,
                  ExportActionMixin,
                  admin.ModelAdmin):
     list_display = ('name', 'descriptors', 'unicode_repr', 'dictionary_name', 'type')
-    list_filter = ("dictionary_name",)
-    search_fields = ("dictionary_name",)
+    list_filter = ("dictionary_name",'type')
+    search_fields = ('name', 'descriptors', 'unicode_repr', 'dictionary_name', 'type')
 
     resource_class = RulesResource
     import_form_class = ToneImportForm
