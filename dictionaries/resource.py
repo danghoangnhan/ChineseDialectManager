@@ -83,8 +83,8 @@ class VocabularyAdminResource(resources.ModelResource):
 
         # Remove duplicate rows
         df.drop_duplicates(inplace=True)
-        # exist_indice = check_duplicate(df)
-        # df = df.drop(index=exist_indice)
+        exist_indice = check_duplicate(df)
+        df = df.drop(index=exist_indice)
         # Check for duplicate rows
         dataset.wipe()
         headers = []

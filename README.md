@@ -62,14 +62,4 @@ docker-compose up -d
 
 6. Customize the application as needed for your specific use case.
 
-## Contributing
-
-We welcome contributions to the Chinese Dialect Management System. If you find any issues or want to add new features, please follow the standard GitHub workflow:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix: `git checkout -b feature/your-feature-name`
-3. Commit your changes: `git commit -m "Add your feature description"`
-4. Push to the branch: `git push origin feature/your-feature-name`
-5. Create a pull request.
-
-Please ensure to follow the existing code style and write unit tests for new features.
+ sudo docker exec -i 6b968d5ae8af mysqldump -uroot -pdictionary dictionary > backup.sql
