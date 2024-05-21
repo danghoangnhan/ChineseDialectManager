@@ -1,6 +1,3 @@
-import re
-
-
 class Dictionary:
 
     def __init__(self, ruleList):
@@ -61,10 +58,4 @@ class Dictionary:
             index = chr(int(index, 16))
             result += index
             data = data[6:]
-        return result
-
-    @staticmethod
-    def unistr(data) -> str:
-        pattern = r'\\u([0-9a-fA-F]{4})'
-        result = re.sub(pattern, lambda match: chr(int(match.group(1), 16)), data)
         return result

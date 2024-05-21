@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-env_path = str(BASE_DIR) +'/envs/prod.env'
+env_path = str(BASE_DIR) +'/envs/dev.env'
 load_dotenv(dotenv_path=env_path)
 
 
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'dictionaries',
+    'vocabulary',
     'rules',
     'django_admin_row_actions',
     'django_object_actions',

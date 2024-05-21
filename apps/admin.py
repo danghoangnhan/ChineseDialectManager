@@ -1,11 +1,16 @@
-from django.contrib.auth.admin import admin
-from django_admin_row_actions import AdminRowActionsMixin
-from django_object_actions import DjangoObjectActions
-from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
+from django.contrib import admin
 
-from dictionaries.VocabularyModel import vocabulary
-from dictionaries.form import VocabularyImportForm, VocabularyExportForm
-from dictionaries.resource import VocabularyAdminResource
+from dictionaries.models import dictionary
+from dictionaries.admin import DictionaryAdmin
+from vocabulary.model import vocabulary
+from vocabulary.admin import VocabularyAdmin
+
+
+admin.site.register(dictionary, DictionaryAdmin)
+admin.site.register(vocabulary, VocabularyAdmin)
+
+
+
 
 
 class VocabularyInline(admin.StackedInline):
@@ -26,9 +31,10 @@ class VocabularyAdmin(DjangoObjectActions,
     resource_class = VocabularyAdminResource
     import_form_class = VocabularyImportForm
     # confirm_form_class = VocabularyConfirmImportForm
-    cache = {'dictionary_name':None,'tone_option':None}
+    cache = {'dictionary_name': None, 'tone_option': None}
     list_filter = ['dictionary_name']
     export_form_class = VocabularyExportForm
+    list_per_page = 15
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
@@ -41,3 +47,6 @@ class VocabularyAdmin(DjangoObjectActions,
         rk['dictionary_name'] = self.cache['dictionary_name']
         rk['tone_option'] = self.cache['tone_option']
         return rk
+
+
+admin.register(vocabulary, VocabularyAdmin)

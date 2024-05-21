@@ -24,3 +24,12 @@ services:
     env_file: 'envs/prod.env'
     ports:
       - 0.0.0.0:3313:3306
+  broker:
+    image: redis:latest
+    container_name: myredis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+volumes:
+  redis_data:
