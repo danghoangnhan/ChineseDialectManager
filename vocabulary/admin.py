@@ -4,7 +4,7 @@ from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 
 from vocabulary.model import vocabulary
-from vocabulary.resource import VocabularyAdminResource
+from vocabulary.resource import VocabularyResource
 from vocabulary.form import VocabularyExportForm, VocabularyImportForm
 
 
@@ -22,8 +22,8 @@ class VocabularyAdmin(DjangoObjectActions,
     list_display = ('symbol_text', 'word', 'tone', 'ipa', 'dictionary_name')
     search_fields = ['symbol_text', 'word', 'tone', 'ipa', 'dictionary_name']
     actions = ['export_as_csv']
-    # change_list_template = "../templates/dictionaries/vocabulary/change_list.html"
-    resource_class = VocabularyAdminResource
+    # change_list_template = "../templates/dictionary/vocabulary/change_list.html"
+    resource_class = VocabularyResource
     import_form_class = VocabularyImportForm
     # confirm_form_class = VocabularyConfirmImportForm
     cache = {'dictionary_name': None, 'tone_option': None}

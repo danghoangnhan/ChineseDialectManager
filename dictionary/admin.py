@@ -8,9 +8,9 @@ from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 from import_export.formats.base_formats import DEFAULT_FORMATS
 
-from dictionaries.form import DictionaryExportForm
-from dictionaries.models import dictionary
-from dictionaries.resource import DictionaryAdminResource
+from dictionary.form import DictionaryExportForm
+from dictionary.models import dictionary
+from dictionary.resource import DictionaryAdminResource
 from vocabulary.model import vocabulary
 
 

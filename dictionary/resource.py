@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from import_export import resources
 from import_export.admin import ImportMixin
 
-from dictionaries.models import dictionary
+from dictionary.models import dictionary
 from rules.models import tone_decode_mapper, tone_encode_mapper, convert_tone
 from vocabulary.model import vocabulary
 

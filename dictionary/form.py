@@ -1,7 +1,7 @@
 from django import forms
 from import_export.forms import ExportForm
 
-from dictionaries.models import dictionary
+from dictionary.models import dictionary
 
 tone_convert_type = [("B_C", "Chinese"), ("A_T", "Taiwan")]
 enable_tone_option = [("1", "yes"), ("2", "no")]

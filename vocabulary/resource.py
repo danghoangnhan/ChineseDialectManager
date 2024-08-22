@@ -5,7 +5,7 @@ from import_export import resources, fields
 
 from consonant import Dictionary as DictConvert
 from vocabulary.model import vocabulary
-from dictionaries.models import dictionary
+from dictionary.models import dictionary
 from rules.models import rules, tone_encode_mapper, tone_decode_mapper, convert_tone
 
 header = {
@@ -28,7 +28,7 @@ def check_duplicate(df) -> list:
     return existed_indice
 
 
-class VocabularyAdminResource(resources.ModelResource):
+class VocabularyResource(resources.ModelResource):
     word = fields.Field(column_name='音', attribute='word')
     symbol_text = fields.Field(column_name='字', attribute='symbol_text')
     tone = fields.Field(column_name='聲調', attribute='tone')

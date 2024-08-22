@@ -1,8 +1,8 @@
 from django import forms
 from import_export.forms import ConfirmImportForm, ExportForm, ImportForm
 
-from dictionaries.form import tone_convert_type
-from dictionaries.models import dictionary
+from dictionary.form import tone_convert_type
+from dictionary.models import dictionary
 
 
 class VocabularyImportForm(ImportForm):
