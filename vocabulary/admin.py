@@ -5,7 +5,7 @@ from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExpo
 
 from vocabulary.model import vocabulary
 from vocabulary.resource import VocabularyResource
-from vocabulary.form import VocabularyExportForm, VocabularyImportForm
+from vocabulary.form import VocabularyExportForm, VocabularyImportForm, VocabularyForm
 
 
 class VocabularyInline(admin.StackedInline):
@@ -30,6 +30,7 @@ class VocabularyAdmin(DjangoObjectActions,
     list_filter = ['dictionary_name']
     export_form_class = VocabularyExportForm
     list_per_page = 15
+    form = VocabularyForm
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
@@ -42,6 +43,11 @@ class VocabularyAdmin(DjangoObjectActions,
         rk['dictionary_name'] = self.cache['dictionary_name']
         rk['tone_option'] = self.cache['tone_option']
         return rk
+
+    def save_model(self, request, obj, form, change):
+        if not hasattr(obj, 'dry_run'):
+            obj.dry_run = False
+        super().save_model(request, obj, form, change)
 
 
 admin.register(vocabulary, VocabularyAdmin)
