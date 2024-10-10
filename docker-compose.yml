@@ -13,14 +13,24 @@ services:
     depends_on:
       - database
     restart: "always"
+    networks:
+      - some-net
   database:
     image: mysql
     container_name: dictionary_api-database
     command:
-     - --default-authentication-plugin=mysql_native_password
+    #  - --default-authentication-plugin=mysql_native_password
      - --character-set-server=utf8mb4
      - --collation-server=utf8mb4_unicode_ci
     restart: "always"
     env_file: 'envs/prod.env'
     ports:
       - 0.0.0.0:3313:3306
+    volumes:
+    - ./mysql_data:/var/lib/mysql
+    networks:
+      - some-net
+
+networks:
+  some-net:
+    name: custom_network
