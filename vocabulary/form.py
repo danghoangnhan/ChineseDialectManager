@@ -43,9 +43,3 @@ class VocabularyForm(forms.ModelForm):
             'description': forms.Textarea(
                 attrs={'class': 'vLargeTextField', 'rows': 4, 'cols': 40, 'style': 'width: 500px;'}),
         }
-
-    def clean_word(self):
-        word = self.cleaned_data.get('word')
-        if vocabulary.objects.filter(word=word).exists():
-            raise forms.ValidationError("This word already exists in the vocabulary.")
-        return word
