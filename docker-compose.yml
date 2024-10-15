@@ -11,7 +11,8 @@ services:
       - 0.0.0.0:8002:8000
     env_file: 'envs/prod.env'
     depends_on:
-      - database
+        database:
+          condition: service_healthy
     restart: "always"
     networks:
       - some-net
@@ -30,6 +31,12 @@ services:
     - ./mysql_data:/var/lib/mysql
     networks:
       - some-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
 networks:
   some-net:

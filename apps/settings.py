@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "author.middlewares.AuthorDefaultBackendMiddleware",
+    # "author.middlewares.AuthorDefaultBackendMiddleware",
 
 ]
 
@@ -69,19 +69,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'apps.wsgi.application'
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'dictionary',
-#         'USER': 'root',
-#         'PASSWORD': 'dictionary',
-#         'HOST': '140.136.149.212',
-#         'PORT': '3313',
-#         'OPTIONS': {
-#             'charset': 'utf8mb4',
-#         }
-#     }
-# }
 
 DATABASES = {
     'default': {
