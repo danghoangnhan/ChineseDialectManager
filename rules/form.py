@@ -1,6 +1,6 @@
 from django import forms
 from import_export.forms import ImportForm, ConfirmImportForm
-from dictionaries.models import dictionary
+from dictionary.models import dictionary
 
 
 class ToneImportForm(ImportForm):
