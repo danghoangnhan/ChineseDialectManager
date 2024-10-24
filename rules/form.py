@@ -39,3 +39,8 @@ class RulesForm(forms.ModelForm):
             'descriptors': forms.TextInput(attrs={'class': 'vTextField'}),
             'type': forms.TextInput(attrs={'class': 'vTextField'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # You can add any additional cleaning or validation here if needed
+        return cleaned_data

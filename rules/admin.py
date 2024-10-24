@@ -6,6 +6,7 @@ from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExpo
 from rules.form import ToneImportForm, ToneConfirmImportForm, RulesForm
 from rules.models import rules
 from rules.resource import RulesResource
+from django.contrib import messages
 
 
 class RulesInline(admin.StackedInline):
@@ -36,5 +37,14 @@ class RulesAdmin(DjangoObjectActions,
         rk['dictionary_name'] = self.cache['dictionary_name']
         return rk
 
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        existing_rules = rules.objects.filter(name=obj.name, dictionary_name=obj.dictionary_name,type=obj.type).count()
+        if existing_rules > 1:
+            messages.warning(request,
+                             f"Note: There are now {existing_rules} rules named '{obj.name}' in the dictionary '{obj.dictionary_name}'.")
+        else:
+            messages.success(request,
+                             f"The rule '{obj.name}' has been successfully added to the dictionary '{obj.dictionary_name}'.")
 
-admin.register(rules, RulesAdmin)
+# admin.register(rules, RulesAdmin)
