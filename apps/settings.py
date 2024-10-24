@@ -15,7 +15,6 @@ load_dotenv(dotenv_path=env_path)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ge356@&9l9=djmz073s&r7na@(bhf%r**tho)jt^din*sfs)1w'
 
-from dotenv import load_dotenv
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -47,7 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "author.middlewares.AuthorDefaultBackendMiddleware",
+    # "author.middlewares.AuthorDefaultBackendMiddleware",
 
 ]
 
