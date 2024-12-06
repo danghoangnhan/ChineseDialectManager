@@ -4,12 +4,10 @@ import urllib3
 from pathlib import Path
 from dotenv import load_dotenv
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-env_path = str(BASE_DIR) +'/envs/prod.env'
+env_path = str(BASE_DIR) + '/envs/dev.env'
 load_dotenv(dotenv_path=env_path)
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -17,10 +15,8 @@ load_dotenv(dotenv_path=env_path)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ge356@&9l9=djmz073s&r7na@(bhf%r**tho)jt^din*sfs)1w'
 
-from dotenv import load_dotenv
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -34,7 +30,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'dictionaries',
+    'dictionary',
+    'vocabulary',
     'rules',
     'django_admin_row_actions',
     'django_object_actions',
@@ -49,8 +46,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+    # "author.middlewares.AuthorDefaultBackendMiddleware",
 
+]
 
 ROOT_URLCONF = 'apps.urls'
 
@@ -71,19 +69,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'apps.wsgi.application'
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dictionary',
-        'USER': 'root',
-        'PASSWORD': 'dictionary',
-        'HOST': '140.136.149.212',
-        'PORT': '3313',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        }
-    }
-}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -95,6 +81,29 @@ DATABASES = {
         'OPTIONS': {
             'charset': 'utf8mb4',
         }
+    }
+}
+
+BROKER_URL = os.environ.get("REDIS_URL", "redis://0.0.0.0:6379/0")
+REDIS_URL = os.environ.get("REDIS_URL", "'redis://0.0.0.0:6379/0'")
+
+STORAGES = {
+    "IMPORT_EXPORT_CELERY_STORAGE": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+}
+
+
+def getVocabularyResource():
+    from vocabulary.resource import VocabularyResource
+    return VocabularyResource
+
+
+IMPORT_EXPORT_CELERY_MODELS = {
+    "vocabulary": {
+        "app_label": "vocabulary",
+        "model_name": "vocabulary",
+        'resource': getVocabularyResource
     }
 }
 
@@ -115,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Taipei'
 
 USE_I18N = True
 
@@ -123,11 +132,14 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEBUG = True
 urllib3.disable_warnings()
 

@@ -4,8 +4,8 @@ from django.dispatch import receiver
 from import_export import resources, fields
 
 from consonant import Dictionary as DictConvert
-from dictionaries.VocabularyModel import vocabulary
-from dictionaries.models import dictionary
+from vocabulary.model import vocabulary
+from dictionary.models import dictionary
 from rules.models import rules, tone_encode_mapper, tone_decode_mapper, convert_tone
 
 header = {
@@ -28,7 +28,7 @@ def check_duplicate(df) -> list:
     return existed_indice
 
 
-class VocabularyAdminResource(resources.ModelResource):
+class VocabularyResource(resources.ModelResource):
     word = fields.Field(column_name='音', attribute='word')
     symbol_text = fields.Field(column_name='字', attribute='symbol_text')
     tone = fields.Field(column_name='聲調', attribute='tone')
@@ -83,8 +83,8 @@ class VocabularyAdminResource(resources.ModelResource):
 
         # Remove duplicate rows
         df.drop_duplicates(inplace=True)
-        exist_indice = check_duplicate(df)
-        df = df.drop(index=exist_indice)
+        # exist_indice = check_duplicate(df)
+        # df = df.drop(index=exist_indice)
         # Check for duplicate rows
         dataset.wipe()
         headers = []

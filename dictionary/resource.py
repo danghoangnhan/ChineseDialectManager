@@ -1,5 +1,5 @@
 import copy
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 
 import pandas as pd
 from django.db.models.signals import post_save
@@ -7,9 +7,9 @@ from django.dispatch import receiver
 from import_export import resources
 from import_export.admin import ImportMixin
 
-from dictionaries.VocabularyModel import vocabulary
-from dictionaries.models import dictionary
+from dictionary.models import dictionary
 from rules.models import tone_decode_mapper, tone_encode_mapper, convert_tone
+from vocabulary.model import vocabulary
 
 header = {
     'symbol_text': '字',

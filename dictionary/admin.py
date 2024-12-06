@@ -1,16 +1,17 @@
 import csv
 from collections import defaultdict
-from import_export.formats.base_formats import DEFAULT_FORMATS
+
 from django.contrib import admin
 from django.http import HttpResponse
 from django_admin_row_actions import AdminRowActionsMixin
 from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
+from import_export.formats.base_formats import DEFAULT_FORMATS
 
-from dictionaries.VocabularyModel import vocabulary
-from dictionaries.dictionary_resource import DictionaryAdminResource
-from dictionaries.form import DictionaryExportForm
-from dictionaries.models import dictionary
+from dictionary.form import DictionaryExportForm
+from dictionary.models import dictionary
+from dictionary.resource import DictionaryAdminResource
+from vocabulary.model import vocabulary
 
 
 @admin.register(dictionary)
@@ -25,6 +26,7 @@ class DictionaryAdmin(DjangoObjectActions,
     search_fields = ['name', 'description']
     export_form_class = DictionaryExportForm
     resource_class = DictionaryAdminResource
+    list_per_page = 15
 
     @admin.action(description=' merge duplicated words')
     def merge_duplicated_words(self, request, queryset):
