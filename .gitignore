@@ -110,3 +110,5 @@ app
 .ide
 __pycache__
 data-db
+mysql_data
+envs

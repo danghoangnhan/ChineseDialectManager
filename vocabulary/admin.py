@@ -3,9 +3,9 @@ from django_admin_row_actions import AdminRowActionsMixin
 from django_object_actions import DjangoObjectActions
 from import_export.admin import ExportActionMixin, ImportExportMixin, ImportExportActionModelAdmin
 
-from dictionaries.VocabularyModel import vocabulary
-from dictionaries.form import VocabularyImportForm, VocabularyExportForm
-from dictionaries.resource import VocabularyAdminResource
+from vocabulary.model import vocabulary
+from vocabulary.resource import VocabularyResource
+from vocabulary.form import VocabularyExportForm, VocabularyImportForm, VocabularyForm
 
 
 class VocabularyInline(admin.StackedInline):
@@ -22,13 +22,15 @@ class VocabularyAdmin(DjangoObjectActions,
     list_display = ('symbol_text', 'word', 'tone', 'ipa', 'dictionary_name')
     search_fields = ['symbol_text', 'word', 'tone', 'ipa', 'dictionary_name']
     actions = ['export_as_csv']
-    # change_list_template = "../templates/dictionaries/vocabulary/change_list.html"
-    resource_class = VocabularyAdminResource
+    # change_list_template = "../templates/dictionary/vocabulary/change_list.html"
+    resource_class = VocabularyResource
     import_form_class = VocabularyImportForm
     # confirm_form_class = VocabularyConfirmImportForm
-    cache = {'dictionary_name':None,'tone_option':None}
+    cache = {'dictionary_name': None, 'tone_option': None}
     list_filter = ['dictionary_name']
     export_form_class = VocabularyExportForm
+    list_per_page = 15
+    form = VocabularyForm
 
     def get_resource_kwargs(self, request, *args, **kwargs):
         rk = super().get_resource_kwargs(request, *args, **kwargs)
@@ -41,3 +43,11 @@ class VocabularyAdmin(DjangoObjectActions,
         rk['dictionary_name'] = self.cache['dictionary_name']
         rk['tone_option'] = self.cache['tone_option']
         return rk
+
+    def save_model(self, request, obj, form, change):
+        if not hasattr(obj, 'dry_run'):
+            obj.dry_run = False
+        super().save_model(request, obj, form, change)
+
+
+admin.register(vocabulary, VocabularyAdmin)

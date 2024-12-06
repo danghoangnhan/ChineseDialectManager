@@ -1,5 +1,5 @@
 from import_export import resources, fields
-from dictionaries.models import dictionary
+from dictionary.models import dictionary
 from rules.models import rules
 import pandas as pd
 

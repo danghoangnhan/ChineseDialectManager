@@ -15,7 +15,6 @@ class dictionary(models.Model):
         verbose_name = 'Dictionary'
         verbose_name_plural = 'Dictionaries'
 
-
     def __unicode__(self):
         return self.name
 
