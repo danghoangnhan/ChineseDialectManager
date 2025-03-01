@@ -1,7 +1,7 @@
 from django.db import models
 from django.forms import JSONField
 
-from dictionaries.models import dictionary
+from dictionary.models import dictionary
 
 
 class ToneRules(models.Model):
@@ -23,7 +23,7 @@ class ToneRules(models.Model):
 
 
 class rules(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
     unicode_repr = models.CharField(max_length=100, unique=False)
     descriptors = models.CharField(max_length=100, unique=False)
     dictionary_name = models.CharField(max_length=50)
