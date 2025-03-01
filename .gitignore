@@ -83,7 +83,7 @@ celerybeat-schedule
 
 # Environments
 .venv
-env/
+envs/
 venv/
 ENV/
 env.bak/
@@ -109,4 +109,5 @@ app
 
 .ide
 __pycache__
-data-db
+mysql_data
+portainer_data
